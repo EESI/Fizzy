@@ -10,6 +10,22 @@ __status__ = "Beta"
 import os
 import sys
 import argparse
+import bmu
+
+try:
+  import feast
+except ImportError:
+  raise ApplicationNotFoundError("Error loading the PyFeast module. It is likely that you do not have PyFeast installed locally.")
+
+def get_fs_methods():
+    """
+        get_fs_methods()
+        return the feature selection methods that are 
+        available for use in a list. note that the options
+        are case sensitive. 
+    """
+    return ['CIFE','CMIM','CondMI','Condred','ICAP','JMI','MIM','MIFS','mRMR']
+
 
 def main():
 
@@ -35,6 +51,53 @@ def main():
   if args.select < 1:
     parser.error("you must select at least one result")
 
+  if args.fs_method not in get_fs_methods():
+    parser.error("fs method not found. please select from " + ' '.join(get_fs_methods()))
+
+  data_arr = bmu.load_biom(args.input_file)
+  map_arr = bmu.load_map(args.map_file)
 
 if __name__ == "__main__":
   sys.exit(main())
+
+def run_pyfeast(data, labels, features, method='MIM', n_select=15):
+    """
+        run_pyfeast(data, labels, method)
+        @data - numpy data (dense)
+        @labels - vector of class labels (discrete)
+        @features - list of feature names
+        @method - feature selection method
+        @n_select - number of features to select
+
+        The feature selection method is based off of the FEAST 
+        C variable selection toolbox. 
+
+        Reference:
+        Gavin Brown, Adam Pocock, Ming-Jie Zhao, and Mikel Lujan, 
+            "Conditional Likelihood Maximisation: A Unifying Framework 
+            for Information Theoretic Feature Selection," Journal of 
+            Machine Learning Research, vol. 13, pp. 27--66, 2012.
+            (http://jmlr.csail.mit.edu/papers/v13/brown12a.html)
+    """
+    
+    try:
+        import feast
+    except ImportError:
+        raise ApplicationNotFoundError("Error loading the PyFeast module. It is likely that you do not have PyFeast installed locally.")
+
+    try:
+        fs_method = getattr(feast, method)
+    except AttributeError:
+        raise AttributeError("Unknown feature selection method is being specified for PyFeast. Make sure the feature selection method being selected is a valid one. ")
+
+    if len(data.transpose()) < n_select:
+        raise ValueError("n_select must be less than the number of observations.")
+    if n_select <= 0:
+        raise ValueError("n_select cannot be less than or equal to zero.")
+
+    sf = fs_method(data, labels, n_select)
+    reduced_set = []
+    for k in range(len(sf)):
+        reduced_set.append(features[int(sf[k])])
+    return reduced_set
+
