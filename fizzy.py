@@ -116,9 +116,12 @@ def main():
 
   labels_disc_dic, labels_disc_arr = convert_to_discrete(labels)
 
-  print labels_disc_arr
+  selected_features =  run_pyfeast(data, numpy.array(labels_disc_arr), features, method=args.fs_method, n_select=args.select)
 
-  run_pyfeast(data, numpy.array(labels_disc_arr), features, method=args.fs_method, n_select=args.select)
+  output_fh = open(args.output_file,"r")
+
+  for feat in selected_features:
+    output_fh.write(str(feat) + "\n")
 
 if __name__ == "__main__":
   sys.exit(main())
