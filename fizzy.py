@@ -11,6 +11,7 @@ import os
 import sys
 import argparse
 import bmu
+import numpy
 
 try:
   import feast
@@ -26,39 +27,19 @@ def get_fs_methods():
     """
     return ['CIFE','CMIM','CondMI','Condred','ICAP','JMI','MIM','MIFS','mRMR']
 
+def convert_to_discrete(items):
+  map_dic = {}
+  discrete_arr = []
 
-def main():
+  # skip the "sample"
+  disc_val = 0
+  for item in items:
+    if item not in map_dic:
+       map_dic[item] = disc_val
+       disc_val += 1
+    discrete_arr.append(map_dic[item])
 
-  #TODO greg fill in descriptions
-  parser = argparse.ArgumentParser(description=
-      "Fizzy implements feature selection for metagenomics \n")
-  parser.add_argument("-n", "--select", type=int, help="number of features to select", required=True)
-  parser.add_argument("-c", "--column-label", type=int, help="column indicating labels in map file")
-  parser.add_argument("-f", "--fs-method", help="Feature selection method. Available: CIFE CMIM CondMI Condred ICAP JMI MIM MIFS mRMR", required=True)
-  parser.add_argument("-i", "--input-file", help="biom format file", required=True)
-  parser.add_argument("-m", "--map-file", help="CSV mapping file", required=True)
-  parser.add_argument("-o", "--output-file", help="output file where selected OTU IDs are stored")
-
-  args = parser.parse_args()
-
-  # Make sure our input exist
-  if not os.path.isfile(args.input_file):
-    parser.error("input file not found")
-
-  if not os.path.isfile(args.map_file):
-    parser.error("map file not found")
-
-  if args.select < 1:
-    parser.error("you must select at least one result")
-
-  if args.fs_method not in get_fs_methods():
-    parser.error("fs method not found. please select from " + ' '.join(get_fs_methods()))
-
-  data_arr = bmu.load_biom(args.input_file)
-  map_arr = bmu.load_map(args.map_file)
-
-if __name__ == "__main__":
-  sys.exit(main())
+  return (map_dic, discrete_arr)
 
 def run_pyfeast(data, labels, features, method='MIM', n_select=15):
     """
@@ -81,11 +62,6 @@ def run_pyfeast(data, labels, features, method='MIM', n_select=15):
     """
     
     try:
-        import feast
-    except ImportError:
-        raise ApplicationNotFoundError("Error loading the PyFeast module. It is likely that you do not have PyFeast installed locally.")
-
-    try:
         fs_method = getattr(feast, method)
     except AttributeError:
         raise AttributeError("Unknown feature selection method is being specified for PyFeast. Make sure the feature selection method being selected is a valid one. ")
@@ -100,4 +76,50 @@ def run_pyfeast(data, labels, features, method='MIM', n_select=15):
     for k in range(len(sf)):
         reduced_set.append(features[int(sf[k])])
     return reduced_set
+
+def main():
+
+  #TODO greg fill in descriptions
+  parser = argparse.ArgumentParser(description=
+      "Fizzy implements feature selection for metagenomics \n")
+  parser.add_argument("-n", "--select", type=int, help="number of features to select", required=True)
+  parser.add_argument("-l", "--label", help="name of coulm indicating labels in map file")
+  parser.add_argument("-f", "--fs-method", help="Feature selection method. Available: CIFE CMIM CondMI Condred ICAP JMI MIM MIFS mRMR", default="MIM")
+  parser.add_argument("-i", "--input-file", help="biom format file", required=True)
+  parser.add_argument("-m", "--map-file", help="CSV mapping file", required=True)
+  parser.add_argument("-o", "--output-file", help="output file where selected OTU IDs are stored")
+
+  args = parser.parse_args()
+
+  # Make sure our input exist
+  if not os.path.isfile(args.input_file):
+    parser.error("input file not found")
+
+  if not os.path.isfile(args.map_file):
+    parser.error("map file not found")
+
+  if args.select < 1:
+    parser.error("you must select at least one result")
+
+  if args.fs_method not in get_fs_methods():
+    parser.error("fs method not found. please select from " + ' '.join(get_fs_methods()))
+
+  data, samples, features = bmu.load_biom(args.input_file)
+  data = numpy.array(data)
+
+  map_arr = bmu.load_map(args.map_file)
+
+  labels = []
+  for sample_id in samples:
+    labels.append(map_arr[sample_id][args.label])
+
+  labels_disc_dic, labels_disc_arr = convert_to_discrete(labels)
+
+  print labels_disc_arr
+
+  run_pyfeast(data, numpy.array(labels_disc_arr), features, method=args.fs_method, n_select=args.select)
+
+if __name__ == "__main__":
+  sys.exit(main())
+
 
