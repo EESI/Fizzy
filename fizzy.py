@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 '''
 Fizzy command line interface
 '''
@@ -82,7 +83,7 @@ def main():
   #TODO greg fill in descriptions
   parser = argparse.ArgumentParser(description=
       "Fizzy implements feature selection for metagenomics \n")
-  parser.add_argument("-n", "--select", type=int, help="number of features to select", required=True)
+  parser.add_argument("-n", "--select", type=int, help="number of features to select", default=15)
   parser.add_argument("-l", "--label", help="name of coulm indicating labels in map file")
   parser.add_argument("-f", "--fs-method", help="Feature selection method. Available: CIFE CMIM CondMI Condred ICAP JMI MIM MIFS mRMR", default="MIM")
   parser.add_argument("-i", "--input-file", help="biom format file", required=True)
