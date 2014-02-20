@@ -3,21 +3,103 @@
 Fizzy command line interface
 '''
 __authors__ = [ "Gregory Ditzler", "Calvin Morrison" ]
+__copyright__ = "Copyright 2013, EESI Laboratory (Drexel University)"
 __license__ = "GPL"
 __maintainer__ = "Gregory Ditzler"
 __email__ = "gditzler@gmail.com"
-__status__ = "Beta"
+__status__ = "Alpha"
 
 import os
 import sys
 import argparse
-import bmu
-import numpy
 
-try:
-  import feast
-except ImportError:
-  raise ApplicationNotFoundError("Error loading the PyFeast module. It is likely that you do not have PyFeast installed locally.")
+import scipy.sparse as sp
+import json
+
+import numpy
+import threading
+
+
+def load_biom(fname):
+  """
+  load a biom file and return a dense matrix 
+  :fname - string containing the path to the biom file
+  :data - numpy array containing the OTU matrix
+  :samples - list containing the sample IDs (important for knowing 
+    the labels in the data matrix)
+  :features - list containing the feature names
+  """
+  o = json.loads(open(fname,"U").read())
+  if o["matrix_type"] == "sparse":
+    data = load_sparse(o)
+  else:
+    data = load_dense(o)
+
+  samples = []
+  for sid in o["columns"]:
+    samples.append(sid["id"])
+  features = []
+  for sid in o["rows"]:
+    # check to see if the taxonomy is listed, this will generally lead to more 
+    # descriptive names for the taxonomies. 
+    if sid.has_key("metadata") and sid["metadata"] != None:
+      if sid["metadata"].has_key("taxonomy"):
+        #features.append(str( \
+        #    sid["metadata"]["taxonomy"]).strip( \
+        #    "[]").replace(",",";").replace("u'","").replace("'",""))
+        features.append(json.dumps(sid["metadata"]["taxonomy"]))
+      else:
+        features.append(sid["id"])
+    else:
+      features.append(sid["id"])
+  return data, samples, features 
+
+def load_dense(obj):
+  """
+  load a biom file in dense format
+  :obj - json dictionary from biom file
+  :data - dense data matrix
+  """
+  n_feat,n_sample = obj["shape"]
+  data = numpy.array(obj["data"])
+  return data.transpose()
+
+def load_sparse(obj):
+  """
+  load a biom file in sparse format
+  :obj - json dictionary from biom file
+  :data - dense data matrix
+  """
+  n_feat,n_sample = obj["shape"] 
+  data = numpy.zeros((n_feat, n_sample))
+  for val in obj["data"]:
+    data[val[0], val[1]] = val[2]
+  data = data.transpose() 
+  return data
+
+def load_map(fname):
+  """
+  load a map file. this function does not have any dependecies on qiime's
+  tools. the returned object is a dictionary of dictionaries. the dictionary 
+  is indexed by the sample_ID and there is an added field for the the 
+  available meta-data. each element in the dictionary is a dictionary with 
+  the keys of the meta-data. 
+  :fname - string containing the map file path
+  :meta_data - dictionary containin the mapping file information  
+  """
+  f = open(fname, "U")
+  mfile = []
+  for line in f: 
+    mfile.append(line.replace("\n","").replace("#","").split("\t"))
+  meta_data_header = mfile.pop(0)
+
+  meta_data = {}
+  for sample in mfile:
+    sample_id = sample[0]
+    meta_data[sample_id] = {}
+    for identifier, value in map(None, meta_data_header, sample):
+      meta_data[sample_id][identifier] = value 
+  return meta_data
 
 def get_fs_methods():
     """
@@ -92,6 +174,12 @@ def main():
 
   args = parser.parse_args()
 
+  try:
+    global feast
+    import feast
+  except ImportError:
+    parser.error("Error loading the PyFeast module. is PyFeast installed?")
+
   # Make sure our input exist
   if not os.path.isfile(args.input_file):
     parser.error("input file not found")
@@ -105,10 +193,10 @@ def main():
   if args.fs_method not in get_fs_methods():
     parser.error("fs method not found. please select from " + ' '.join(get_fs_methods()))
 
-  data, samples, features = bmu.load_biom(args.input_file)
+  data, samples, features = load_biom(args.input_file)
   data = numpy.array(data)
 
-  map_arr = bmu.load_map(args.map_file)
+  map_arr = load_map(args.map_file)
 
   labels = []
   for sample_id in samples:
@@ -116,10 +204,14 @@ def main():
 
   labels_disc_dic, labels_disc_arr = convert_to_discrete(labels)
 
-  selected_features =  run_pyfeast(data, numpy.array(labels_disc_arr), features, method=args.fs_method, n_select=args.select)
+  t = threading.Thread(target=run_pyfeast, args=[data, numpy.array(labels_disc_arr), features], kwargs={'method':args.fs_method, 'n_select': args.select})
+  t.daemon = True
+  t.start()
 
-  output_fh = open(args.output_file,"r")
+  while t.is_alive(): # wait for the thread to exit
+    t.join(1)
 
+  output_fh = open(args.output_file,"w")
   for feat in selected_features:
     output_fh.write(str(feat) + "\n")
 
