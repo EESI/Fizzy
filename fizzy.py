@@ -88,7 +88,7 @@ def main():
   parser.add_argument("-f", "--fs-method", help="Feature selection method. Available: CIFE CMIM CondMI Condred ICAP JMI MIM MIFS mRMR", default="MIM")
   parser.add_argument("-i", "--input-file", help="biom format file", required=True)
   parser.add_argument("-m", "--map-file", help="CSV mapping file", required=True)
-  parser.add_argument("-o", "--output-file", help="output file where selected OTU IDs are stored")
+  parser.add_argument("-o", "--output-file", help="output file where selected OTU IDs are stored", required=True)
 
   args = parser.parse_args()
 
