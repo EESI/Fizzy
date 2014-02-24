@@ -19,7 +19,6 @@ import json
 import numpy
 import threading
 
-
 def load_biom(fname):
   """
   load a biom file and return a dense matrix 
@@ -124,41 +123,43 @@ def convert_to_discrete(items):
 
   return (map_dic, discrete_arr)
 
-def run_pyfeast(data, labels, features, method='MIM', n_select=15):
-    """
-        run_pyfeast(data, labels, method)
-        @data - numpy data (dense)
-        @labels - vector of class labels (discrete)
-        @features - list of feature names
-        @method - feature selection method
-        @n_select - number of features to select
+def run_pyfeast(data, labels, features, args):
+  """
+      run_pyfeast(data, labels, method)
+      @data - numpy data (dense)
+      @labels - vector of class labels (discrete)
+      @features - list of feature names
+      @method - feature selection method
+      @n_select - number of features to select
 
-        The feature selection method is based off of the FEAST 
-        C variable selection toolbox. 
+      The feature selection method is based off of the FEAST 
+      C variable selection toolbox. 
 
-        Reference:
-        Gavin Brown, Adam Pocock, Ming-Jie Zhao, and Mikel Lujan, 
-            "Conditional Likelihood Maximisation: A Unifying Framework 
-            for Information Theoretic Feature Selection," Journal of 
-            Machine Learning Research, vol. 13, pp. 27--66, 2012.
-            (http://jmlr.csail.mit.edu/papers/v13/brown12a.html)
-    """
-    
-    try:
-        fs_method = getattr(feast, method)
-    except AttributeError:
-        raise AttributeError("Unknown feature selection method is being specified for PyFeast. Make sure the feature selection method being selected is a valid one. ")
+      Reference:
+      Gavin Brown, Adam Pocock, Ming-Jie Zhao, and Mikel Lujan, 
+          "Conditional Likelihood Maximisation: A Unifying Framework 
+          for Information Theoretic Feature Selection," Journal of 
+          Machine Learning Research, vol. 13, pp. 27--66, 2012.
+          (http://jmlr.csail.mit.edu/papers/v13/brown12a.html)
+  """
+  try:
+    fs_method = getattr(feast, args.fs_method)
+  except AttributeError:
+    raise AttributeError("Unknown feature selection method is being specified for PyFeast. Make sure the feature selection method being selected is a valid one. ")
 
-    if len(data.transpose()) < n_select:
-        raise ValueError("n_select must be less than the number of observations.")
-    if n_select <= 0:
-        raise ValueError("n_select cannot be less than or equal to zero.")
+  if len(data.transpose()) < args.select:
+    raise ValueError("n_select must be less than the number of observations.")
+  if args.select <= 0:
+    raise ValueError("n_select cannot be less than or equal to zero.")
 
-    sf = fs_method(data, labels, n_select)
-    reduced_set = []
-    for k in range(len(sf)):
-        reduced_set.append(features[int(sf[k])])
-    return reduced_set
+  sf = fs_method(data, labels, args.select)
+  reduced_set = []
+  for k in range(len(sf)):
+    reduced_set.append(features[int(sf[k])])
+
+  output_fh = open(args.output_file,"w")
+  for feat in reduced_set:
+    output_fh.write(str(feat) + "\n")
 
 def main():
 
@@ -204,16 +205,12 @@ def main():
 
   labels_disc_dic, labels_disc_arr = convert_to_discrete(labels)
 
-  t = threading.Thread(target=run_pyfeast, args=[data, numpy.array(labels_disc_arr), features], kwargs={'method':args.fs_method, 'n_select': args.select})
+  t = threading.Thread(target=run_pyfeast, args=[data, numpy.array(labels_disc_arr), features, args])
   t.daemon = True
   t.start()
 
   while t.is_alive(): # wait for the thread to exit
     t.join(1)
-
-  output_fh = open(args.output_file,"w")
-  for feat in selected_features:
-    output_fh.write(str(feat) + "\n")
 
 if __name__ == "__main__":
   sys.exit(main())
