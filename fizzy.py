@@ -3,10 +3,10 @@
 Fizzy command line interface
 '''
 __authors__ = [ "Gregory Ditzler", "Calvin Morrison" ]
-__copyright__ = "Copyright 2013, EESI Laboratory (Drexel University)"
+__copyright__ = "Copyright 2014, EESI Laboratory (Drexel University)"
 __license__ = "GPL"
 __maintainer__ = "Gregory Ditzler"
-__email__ = "gditzler@gmail.com"
+__email__ = "gregory.ditzler@gmail.com"
 __status__ = "Alpha"
 
 import os
