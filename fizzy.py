@@ -1,23 +1,18 @@
 #!/usr/bin/env python
-'''
-Fizzy command line interface
-'''
+import os
+import sys
+import argparse
+import scipy.sparse as sp
+import json
+import numpy
+import threading
+
 __authors__ = [ "Gregory Ditzler", "Calvin Morrison" ]
 __copyright__ = "Copyright 2014, EESI Laboratory (Drexel University)"
 __license__ = "GPL"
 __maintainer__ = "Gregory Ditzler"
 __email__ = "gregory.ditzler@gmail.com"
 __status__ = "Alpha"
-
-import os
-import sys
-import argparse
-
-import scipy.sparse as sp
-import json
-
-import numpy
-import threading
 
 def load_biom(fname):
   """
@@ -43,9 +38,7 @@ def load_biom(fname):
     # descriptive names for the taxonomies. 
     if sid.has_key("metadata") and sid["metadata"] != None:
       if sid["metadata"].has_key("taxonomy"):
-        #features.append(str( \
-        #    sid["metadata"]["taxonomy"]).strip( \
-        #    "[]").replace(",",";").replace("u'","").replace("'",""))
+        # using json.dumps is a quick way to convert the dictionary to a string
         features.append(json.dumps(sid["metadata"]["taxonomy"]))
       else:
         features.append(sid["id"])
