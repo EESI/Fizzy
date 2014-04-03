@@ -19,9 +19,29 @@ Getting help with `fizzy.py`:
 
 A general useage example for Fizzy would be something along the lines of
 ```bash
-  fizzy.py -i my-data.biom -o results.txt -m mapping-file.txt -f JMI -l BODY_SITE
+  fizzy.py -i my-data.biom -o results.txt -m mapping-file.txt -f JMI -l BODY-SITE
 ```
-where `BODY_SITE` is a column in the mapping file.
+where `BODY-SITE` is a column in the mapping file.
+
+# Installation and Dependencies
+
+You need to install the [PyFeast](https://github.com/EESI/PyFeast) feature selection library in order to run the tools in Fizzy; however, PyFeast has its own dependencies - namely FEAST. Install the [MIToolbox](https://github.com/Craigacp/MIToolbox) and [FEAST](https://github.com/Craigacp/FEAST) prior to installing PyFeast. For example, you may need to do
+```shell
+  git clone https://github.com/Craigacp/MIToolbox.git
+  cd MIToolbox
+  make 
+  sudo make install
+  cd ../
+  git clone https://github.com/Craigacp/FEAST.git
+  make
+  sudo make install
+  cd ../
+  git clone https://github.com/EESI/PyFeast.git
+  cd PyFeast
+  python setup.py build 
+  sudo python setup.py install 
+```
+
 
 # Credits
 
