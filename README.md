@@ -15,4 +15,10 @@ Getting help with `fizzy.py`:
   fizzy.py -h
 ```
 
+# General Usage Example
+
+A general useage example for Fizzy would be something along the lines of
+```bash
+  fizzy.py -i my-data.biom -o results.txt -m mapping-file.txt -f JMI -l BODY_SITE
+```
 
