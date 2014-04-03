@@ -1,5 +1,7 @@
 # Fizzy Feature Selection Tool
 
+Fizzy is a subset selection tool that uses [FEAST](http://www.cs.man.ac.uk/~gbrown/fstoolbox/) in the background to run feature selection. Fizzy processes [BIOM](http://biom-format.org/) and mapping files, which are a standard in metagenomics data analysis. `fizzy.py` will run feature selection on taxanomic abundances obtained from the biom file given a set of categorical labels obtained form the the mapping file.  
+
 # Options 
 * `-l`, `--label`: name of column of the mapping file that indicates the labels
 * `-n`, `--select`: number of taxonomic features to select
