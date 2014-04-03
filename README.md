@@ -21,4 +21,8 @@ A general useage example for Fizzy would be something along the lines of
 ```bash
   fizzy.py -i my-data.biom -o results.txt -m mapping-file.txt -f JMI -l BODY_SITE
 ```
-where `BODY_SITE` is a column in the mapping file. 
+where `BODY_SITE` is a column in the mapping file.
+
+# Credits
+
+* [Calvin Morrison](http://mutantturkey.com/), [Gregory Ditzler](http://gregoryditzler.com), and [Gail Rosen](http://www.ece.drexel.edu/gailr/) 
