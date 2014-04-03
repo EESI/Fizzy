@@ -42,6 +42,7 @@ You need to install the [PyFeast](https://github.com/EESI/PyFeast) feature selec
   sudo python setup.py install 
 ```
 
+The above code will install all of the dependencies. To run `fizzy.py` either: (a) always run the `fizzy.py` from a working directory, or (b) add the script to `/usr/local/bin/`
 
 # Credits
 
