@@ -33,6 +33,7 @@ You need to install the [PyFeast](https://github.com/EESI/PyFeast) feature selec
   sudo make install
   cd ../
   git clone https://github.com/Craigacp/FEAST.git
+  cd FEAST
   make
   sudo make install
   cd ../
