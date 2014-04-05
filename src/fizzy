@@ -119,11 +119,11 @@ def convert_to_discrete(items):
 def run_pyfeast(data, labels, features, args):
   """
   run_pyfeast(data, labels, method)
-  @data - numpy data (dense)
-  @labels - vector of class labels (discrete)
-  @features - list of feature names
-  @method - feature selection method
-  @n_select - number of features to select
+  :data - numpy data (dense)
+  :labels - vector of class labels (discrete)
+  :features - list of feature names
+  :method - feature selection method
+  :n_select - number of features to select
 
   The feature selection method is based off of the FEAST 
   C variable selection toolbox. 
