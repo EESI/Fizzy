@@ -48,4 +48,6 @@ where `BODY-SITE` is a column in the mapping file.
 
 # Credits
 
-* [Calvin Morrison](http://mutantturkey.com/), [Gregory Ditzler](http://gregoryditzler.com), and [Gail Rosen](http://www.ece.drexel.edu/gailr/) 
+* [Calvin Morrison](http://mutantturkey.com/)
+* [Gregory Ditzler](http://gregoryditzler.com)
+* [Gail Rosen](http://www.ece.drexel.edu/gailr/) 
