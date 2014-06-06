@@ -1,9 +1,9 @@
-<tool id="quikr" name="Quikr">
+<tool id="Fizzy" name="Fizzy">
 	<description>subset selection tool for metagenomics analysis</description>
-	<command>fizzy -i $biom -f $fs -n $select -m $map -o $output</command>
+	<command>fizzy -i $biom -f $fs -l $label -n $select -m $map -o $output</command>
 	<inputs>
 		<param name="biom" type="data" format="biom" label="biom file"/>
-		<param name="map" type="data" format="csv" label="biom file"/>
+		<param name="map" type="data" format="data" label="map file"/>
 		<param name="fs" type="select" label="feature selection method">
 			<option value="CIFE">CIFE</option>
 			<option value="CMIM">CMIM</option>
@@ -16,15 +16,12 @@
 			<option value="mRMR">mRMR</option>
 		</param>
 		<param name="select" type="integer" size="4" value="10" label="number of features to select" help="default 10000"/>
-		<param name = "label" type="text" value="0" label="name of the colum of mapping file that indicates the labels">
+		<param name="label" type="text" value="0" label="name of the colum of mapping file that indicates the labels" />
 	</inputs>
 	<outputs>
 		<data name="output" format="tabular"/>
 	</outputs>
 	<help> 
-		Fizzy is s a subset selection tool that uses FEAST in the background
-	to run feature selection. Fizzy processes BIOM and mapping files, which are a
-	standard in metagenomics data analysis. fizzy will run feature selection on
-	taxanomic abundances obtained from the biom file given a set of categorical
-	labels obtained form the the mapping file.  
-</help> </tool>
+		Fizzy is s a subset selection tool that uses FEAST in the background to run feature selection. Fizzy processes BIOM and mapping files, which are a	standard in metagenomics data analysis. fizzy will run feature selection on	taxanomic abundances obtained from the biom file given a set of categorical	labels obtained form the the mapping file.  
+	</help> 
+</tool>
