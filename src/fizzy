@@ -158,19 +158,32 @@ def run_pyfeast(data, labels, features, args):
 
 def main():
 
-  parser = argparse.ArgumentParser(description="Fizzy implements feature subset " 
-    +"selection for biological data formats, which are commonly used in metagenomic "
-    +"data analysis.  \n")
-  parser.add_argument("-n", "--select", type=int, help="number of features to select", 
+  parser = argparse.ArgumentParser(
+    description="Fizzy implements feature subset " 
+      +"selection for biological data formats, which are commonly used in metagenomic "
+      +"data analysis.  \n")
+  parser.add_argument("-n", "--select", 
+    type=int, 
+    help="number of features to select", 
     default=15)
-  parser.add_argument("-l", "--label", help="name of column of the mapping file that "
-    +"indicates the labels")
-  parser.add_argument("-f", "--fs-method", help="Feature selection method. Available: "
-    +"CIFE CMIM CondMI Condred ICAP JMI MIM MIFS mRMR", default="MIM")
-  parser.add_argument("-i", "--input-file", help="biom format file", required=True)
-  parser.add_argument("-m", "--map-file", help="CSV mapping file", required=True)
-  parser.add_argument("-o", "--output-file", help="output file where selected OTU IDs "
-    +"are stored", required=True)
+  parser.add_argument("-l", "--label", 
+    help="name of column of the mapping file that "
+      +"indicates the labels",
+    required=True)
+  parser.add_argument("-f", "--fs-method", 
+    help="Feature selection method. Available: "
+      +"CIFE CMIM CondMI Condred ICAP JMI MIM MIFS mRMR", 
+    default="MIM")
+  parser.add_argument("-i", "--input-file", 
+    help="biom format file", 
+    required=True)
+  parser.add_argument("-m", "--map-file", 
+    help="CSV mapping file", 
+    required=True)
+  parser.add_argument("-o", "--output-file", 
+    help="output file where selected OTU IDs "
+    +"are stored", 
+    required=True)
 
   args = parser.parse_args()
 
