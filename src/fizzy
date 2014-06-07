@@ -71,7 +71,7 @@ def load_sparse(obj):
 
 def load_map(fname):
   """
-  load a map file. this function does not have any dependecies on qiime's
+  load a map file. this function does not have any dependecies on qiime"s
   tools. the returned object is a dictionary of dictionaries. the dictionary 
   is indexed by the sample_ID and there is an added field for the the 
   available meta-data. each element in the dictionary is a dictionary with 
@@ -100,7 +100,7 @@ def get_fs_methods():
   available for use in a list. note that the options
   are case sensitive. 
   """
-  return ['CIFE','CMIM','CondMI','Condred','ICAP','JMI','MIM','MIFS','mRMR']
+  return ["CIFE","CMIM","CondMI","Condred","ICAP","JMI","MIM","MIFS","mRMR"]
 
 def convert_to_discrete(items):
   map_dic = {}
@@ -195,16 +195,17 @@ def main():
 
   # Make sure our input exist
   if not os.path.isfile(args.input_file):
-    parser.error("input file not found")
+    parser.error("Input file not found.")
 
   if not os.path.isfile(args.map_file):
-    parser.error("map file not found")
+    parser.error("Map file not found.")
 
   if args.select < 1:
-    parser.error("you must select at least one result")
+    parser.error("You must select at least one result.")
 
   if args.fs_method not in get_fs_methods():
-    parser.error("fs method not found. please select from " + ' '.join(get_fs_methods()))
+    parser.error("Feature selection method not found. please select from " 
+      + " ".join(get_fs_methods()))
 
   data, samples, features = load_biom(args.input_file)
   data = numpy.array(data)
