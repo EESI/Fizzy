@@ -1,5 +1,6 @@
 *.pyc
 *.swp
+src/local-test.sh 
 test/results.txt
 test/fizzy
 test/.ipynb_checkpoints/
