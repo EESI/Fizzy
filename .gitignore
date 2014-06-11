@@ -1,5 +1,6 @@
 *.pyc
 *.swp
+src/results.txt
 src/local-test.sh 
 test/results.txt
 test/fizzy
