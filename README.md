@@ -22,7 +22,7 @@ You need to install the [PyFeast](https://github.com/EESI/PyFeast) feature selec
   sudo python setup.py install 
 ```
 
-The above code will install all of the dependencies. Installing `fizzy` requires that you have root access because it is copied to `/usr/local/bin/`. Run `make` at the commandline. 
+The above code will install all of the dependencies. Installing `fizzy` requires that you have root access because it is copied to `/usr/local/bin/`. Run `make` at the commandline. Make sure that all of the feature selection methods are compiled with FEAST. Note that this will require you to check the `Makefile` of FEAST.  
 
 # Options 
 
@@ -46,8 +46,11 @@ A general useage example for Fizzy would be something along the lines of
 ```
 where `BODY-SITE` is a column in the mapping file.
 
+Also, check out the [IPython notebook](https://github.com/EESI/Fizzy/blob/master/test/Fizzy-Notebook.ipynb) for a general Fizzy usage example. 
+
 # Credits
 
 * [Calvin Morrison](http://mutantturkey.com/)
 * [Gregory Ditzler](http://gregoryditzler.com)
 * [Gail Rosen](http://www.ece.drexel.edu/gailr/) 
+
