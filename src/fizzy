@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os
+import re
 import sys
 import argparse
 import scipy.sparse as sp
@@ -116,7 +117,7 @@ def convert_to_discrete(items):
 
   return (map_dic, discrete_arr)
 
-def run_pyfeast(data, labels, features, args):
+def run_pyfeast(data, labels, features, args, key_map):
   """
   run_pyfeast(data, labels, method)
   :data - numpy data (dense)
@@ -124,6 +125,7 @@ def run_pyfeast(data, labels, features, args):
   :features - list of feature names
   :method - feature selection method
   :n_select - number of features to select
+  :key_map - map to go from label integers to class names
 
   The feature selection method is based off of the FEAST 
   C variable selection toolbox. 
@@ -149,12 +151,27 @@ def run_pyfeast(data, labels, features, args):
 
   sf = fs_method(data, labels, args.select)
   reduced_set = []
+  dels = re.compile('"| |\[|\]')
   for k in range(len(sf)):
-    reduced_set.append(features[int(sf[k])])
+    mstr = features[int(sf[k])]
+    reduced_set.append(dels.sub("", mstr))
 
-  output_fh = open(args.output_file,"w")
-  for feat in reduced_set:
-    output_fh.write(str(feat) + "\n")
+  ds = get_stats(data, labels, sf, reduced_set, key_map)
+  json.dump(ds, open(args.output_file,"w"))
+
+
+def get_stats(data, labels, indices, reduced_set, key_map):
+  """
+  Convert a few statistics about the data to a dictionary. 
+  """
+  data_struct = {}
+  for n,key in enumerate(key_map):
+    feature_idx = numpy.array([int(i) for i in indices]).reshape( \
+        len(indices),1)
+    class_idx = numpy.where(numpy.array(labels)==key_map[key])[0]
+    data_struct[key] = data[class_idx, feature_idx].mean(axis=1).tolist()
+  data_struct["Features"] = reduced_set
+  return data_struct
 
 def build_parser():
   parser = argparse.ArgumentParser(
@@ -180,7 +197,7 @@ def build_parser():
     help="CSV mapping file", 
     required=True)
   parser.add_argument("-o", "--output-file", 
-    help="output file where selected OTU IDs "
+    help="output file where selected OTU IDs and averages of the OTUS for each class"
     +"are stored", 
     required=True)
   return parser
@@ -219,9 +236,9 @@ def main():
     labels.append(map_arr[sample_id][args.label])
 
   labels_disc_dic, labels_disc_arr = convert_to_discrete(labels)
-
+  
   t = threading.Thread(target=run_pyfeast, 
-      args=[data, numpy.array(labels_disc_arr), features, args])
+      args=[data, numpy.array(labels_disc_arr), features, args, labels_disc_dic])
   t.daemon = True
   t.start()
 
