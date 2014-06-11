@@ -44,7 +44,7 @@ A general useage example for Fizzy would be something along the lines of
 ```bash
   fizzy -i my-data.biom -o results.txt -m mapping-file.txt -f JMI -l BODY-SITE -n 100
 ```
-where `BODY-SITE` is a column in the mapping file.
+where `BODY-SITE` is a column in the mapping file. The output file is save in JSON format with the fields that are the classes and a key called `Features`. The `Features` key contains the OTUs that were selected as relevant. Each of the class keys contains the average abundance of the OTUs that were selected. 
 
 Also, check out the [IPython notebook](http://nbviewer.ipython.org/github/EESI/Fizzy/blob/master/test/Fizzy-Notebook.ipynb) for a general Fizzy usage example. 
 
