@@ -156,12 +156,11 @@ def run_pyfeast(data, labels, features, args):
   for feat in reduced_set:
     output_fh.write(str(feat) + "\n")
 
-def main():
-
+def build_parser():
   parser = argparse.ArgumentParser(
-    description="Fizzy implements feature subset " 
-      +"selection for biological data formats, which are commonly used in metagenomic "
-      +"data analysis.  \n")
+    description=("Fizzy implements feature subset selection for biological "
+      "data formats, which are commonly used in metagenomic data analysis.\n")
+  )
   parser.add_argument("-n", "--select", 
     type=int, 
     help="number of features to select", 
@@ -184,7 +183,10 @@ def main():
     help="output file where selected OTU IDs "
     +"are stored", 
     required=True)
+  return parser
 
+def main():
+  parser = build_parser()
   args = parser.parse_args()
 
   try:
@@ -218,7 +220,8 @@ def main():
 
   labels_disc_dic, labels_disc_arr = convert_to_discrete(labels)
 
-  t = threading.Thread(target=run_pyfeast, args=[data, numpy.array(labels_disc_arr), features, args])
+  t = threading.Thread(target=run_pyfeast, 
+      args=[data, numpy.array(labels_disc_arr), features, args])
   t.daemon = True
   t.start()
 
