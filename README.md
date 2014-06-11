@@ -46,7 +46,7 @@ A general useage example for Fizzy would be something along the lines of
 ```
 where `BODY-SITE` is a column in the mapping file.
 
-Also, check out the [IPython notebook](https://github.com/EESI/Fizzy/blob/master/test/Fizzy-Notebook.ipynb) for a general Fizzy usage example. 
+Also, check out the [IPython notebook](http://nbviewer.ipython.org/github/EESI/Fizzy/blob/master/test/Fizzy-Notebook.ipynb) for a general Fizzy usage example. 
 
 # Credits
 
