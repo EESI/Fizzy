@@ -157,7 +157,23 @@ def run_pyfeast(data, labels, features, args, key_map):
     reduced_set.append(dels.sub("", mstr))
 
   ds = get_stats(data, labels, sf, reduced_set, key_map)
-  json.dump(ds, open(args.output_file,"w"))
+  if args.json==True:
+    json.dump(ds, open(args.output_file,"w"))
+  else:
+    f = open(args.output_file, "w")
+    for n,key in enumerate(ds.keys()):
+      if n == len(ds.keys())-1:
+        f.write(key+"\n")
+      else:
+        f.write(key+"\t")
+    for n in range(len(ds["Features"])):
+      for m,key in enumerate(ds.keys()):
+        if m == len(ds.keys())-1:
+          f.write(str(ds[key][n])+"\n")
+        else:
+          f.write(str(ds[key][n])+"\t")
+    f.close()
+
 
 
 def get_stats(data, labels, indices, reduced_set, key_map):
@@ -194,8 +210,12 @@ def build_parser():
     help="biom format file", 
     required=True)
   parser.add_argument("-m", "--map-file", 
-    help="CSV mapping file", 
+    help="map file (tsv)", 
     required=True)
+  parser.add_argument("-j", "--json", 
+    help="store the output as a json format file.",
+    action="store_true",
+    required=False)
   parser.add_argument("-o", "--output-file", 
     help="output file where selected OTU IDs and averages of the OTUS for each class"
     +"are stored", 

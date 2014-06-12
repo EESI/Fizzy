@@ -30,9 +30,9 @@ The above code will install all of the dependencies. Installing `fizzy` requires
 * `-n`, `--select`: number of taxonomic features to select
 * `-f`, `--fs-method`: Feature selection method. Available: CIFE CMIM CondMI, Condred ICAP JMI MIM MIFS mRMR
 * `-i`, `--input-file`: biom format file
-* `-m`, `--map-file`: CSV mapping file
+* `-m`, `--map-file`: TSV mapping file
 * `-o`, `--ouput-file`: output file where selected taxonimic IDs are saved
-
+* `-j`, `--json`: save the file in JSON not TSV format (TSV if the option is not set)
 Getting help with `fizzy`:
 ```bash 
   fizzy -h
