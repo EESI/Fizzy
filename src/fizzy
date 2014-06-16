@@ -181,13 +181,21 @@ def get_stats(data, labels, indices, reduced_set, key_map):
   Convert a few statistics about the data to a dictionary. 
   """
   data_struct = {}
+  data_rel = count2abun(data)
   for n,key in enumerate(key_map):
     feature_idx = numpy.array([int(i) for i in indices]).reshape( \
         len(indices),1)
     class_idx = numpy.where(numpy.array(labels)==key_map[key])[0]
-    data_struct[key] = data[class_idx, feature_idx].mean(axis=1).tolist()
+    data_struct[key] = data_rel[class_idx, feature_idx].mean(axis=1).tolist()
   data_struct["Features"] = reduced_set
   return data_struct
+
+def count2abun(count_matrix):
+  """
+  Convert X into a relative abundance matrix
+  """
+  scale_factor = count_matrix.sum(axis=1)
+  return count_matrix/numpy.tile(scale_factor,[count_matrix.shape[1],1]).transpose()
 
 def build_parser():
   parser = argparse.ArgumentParser(
