@@ -29,7 +29,7 @@ def load_biom(fname):
   try:
     o = json.loads(open(fname,"U").read())
   except Exception, e:
-    exit('Error: could not load biom. "' + str(e) +'')
+    exit('Error: could not load biom. "' + str(e) +'"')
 
   if o["matrix_type"] == "sparse":
     data = load_sparse(o)
@@ -110,7 +110,7 @@ def write_results(data, labels, features, results, output_fp, key_map, set_json)
   for k in range(len(results)):
     mstr = features[int(results[k])]
     reduced_set.append(dels.sub("", mstr))
-  
+
   ds = get_stats(data, labels, results, reduced_set, key_map)
   if set_json==True:
     json.dump(ds, open(output_fp,"w"))
@@ -123,7 +123,7 @@ def write_results(data, labels, features, results, output_fp, key_map, set_json)
           f.write(key+"\n")
         else:
           f.write(key+"\t")
-    
+
     for n in range(len(ds["Features"])):
       f.write(ds["Features"][n]+"\t")
       for m,key in enumerate(ds.keys()):
@@ -186,11 +186,11 @@ def build_parser():
       "data formats, which are commonly used in metagenomic data analysis.\n")
   )
   parser.add_argument("-a", "--alpha",
-    type=float, 
+    type=float,
     help="size of the Neyman-Pearson hypothesis test",
     default=0.01)
   parser.add_argument("-b", "--bootstraps",
-    type=int, 
+    type=int,
     help="number of bootstraps to run",
     default=50)
   parser.add_argument("-c", "--cpus",
@@ -221,7 +221,7 @@ def build_parser():
     default=5)
   parser.add_argument("-o", "--output-file",
     help="output file where selected OTU IDs"
-    +"are stored", 
+    +"are stored",
     required=True)
   return parser
 
