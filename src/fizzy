@@ -160,18 +160,23 @@ def run_pyfeast(data, labels, features, args, key_map):
   if args.json==True:
     json.dump(ds, open(args.output_file,"w"))
   else:
-    f = open(args.output_file, "w")
+    f = open(output_fp, "w")
+    f.write("Features\t")
     for n,key in enumerate(ds.keys()):
-      if n == len(ds.keys())-1:
-        f.write(key+"\n")
-      else:
-        f.write(key+"\t")
-    for n in range(len(ds["Features"])):
-      for m,key in enumerate(ds.keys()):
-        if m == len(ds.keys())-1:
-          f.write(str(ds[key][n])+"\n")
+      if key != "Features"
+        if n == len(ds.keys())-1:
+          f.write(key+"\n")
         else:
-          f.write(str(ds[key][n])+"\t")
+          f.write(key+"\t")
+    
+    for n in range(len(ds["Features"])):
+      f.write(ds["Features"][n])
+      for m,key in enumerate(ds.keys()):
+        if key != "Features":
+          if m == len(ds.keys())-1:
+            f.write(str(ds[key][n])+"\n")
+          else:
+            f.write(str(ds[key][n])+"\t")
     f.close()
 
 

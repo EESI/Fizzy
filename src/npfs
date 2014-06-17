@@ -17,10 +17,6 @@ __maintainer__ = "Gregory Ditzler"
 __email__ = "gregory.ditzler@gmail.com"
 __status__ = "v1.0.0"
 
-alpha = 0.01
-beta = 0.0
-parallel = 32
-
 def load_biom(fname):
   """
   load a biom file and return a dense matrix 
@@ -100,15 +96,55 @@ def load_map(fname):
       meta_data[sample_id][identifier] = value 
   return meta_data
 
-def write_results(features, results, fn):
+def write_results(features, results, output_fp, key_map):
   """
   write the indicies listed in results from the features array into fn into a
   tabular output.
   """
-  with open(fn, 'w') as fh:
-    for n in results:
-      array = json.loads(features[n])
-      fh.write('\t'.join(array) + '\n')
+  reduced_set = []
+  dels = re.compile('"| |\[|\]')
+  for k in range(len(results)):
+    mstr = features[int(results[k])]
+    reduced_set.append(dels.sub("", mstr))
+  
+  ds = get_stats(data, labels, results, reduced_set, key_map)
+  if args.json==True:
+    json.dump(ds, open(output_fp,"w"))
+  else:
+    f = open(output_fp, "w")
+    f.write("Features\t")
+    for n,key in enumerate(ds.keys()):
+      if key != "Features"
+        if n == len(ds.keys())-1:
+          f.write(key+"\n")
+        else:
+          f.write(key+"\t")
+    
+    for n in range(len(ds["Features"])):
+      f.write(ds["Features"][n])
+      for m,key in enumerate(ds.keys()):
+        if key != "Features":
+          if m == len(ds.keys())-1:
+            f.write(str(ds[key][n])+"\n")
+          else:
+            f.write(str(ds[key][n])+"\t")
+    f.close()
+
+
+def get_stats(data, labels, indices, reduced_set, key_map):
+  """
+  Convert a few statistics about the data to a dictionary. 
+  """
+  data_struct = {}
+  data_rel = count2abun(data)
+  for n,key in enumerate(key_map):
+    feature_idx = numpy.array([int(i) for i in indices]).reshape( \
+        len(indices),1)
+    class_idx = numpy.where(numpy.array(labels)==key_map[key])[0]
+    data_struct[key] = data_rel[class_idx, feature_idx].mean(axis=1).tolist()
+  data_struct["Features"] = reduced_set
+  return data_struct
+
 
 def get_fs_methods():
   """
@@ -120,6 +156,7 @@ def get_fs_methods():
   return ["CIFE","CMIM","CondMI","Condred","ICAP","JMI","MIM","MIFS","mRMR"]
 
 def convert_to_discrete(items):
+  """Convert a list of labels to numerics"""
   map_dic = {}
   discrete_arr = []
 
@@ -130,14 +167,17 @@ def convert_to_discrete(items):
        map_dic[item] = disc_val
        disc_val += 1
     discrete_arr.append(map_dic[item])
-
   return (map_dic, discrete_arr)
 
 def build_parser():
   parser = argparse.ArgumentParser(
-    description=("Fizzy implements feature subset selection for biological "
+    description=("NPFS implements feature subset selection for biological "
       "data formats, which are commonly used in metagenomic data analysis.\n")
   )
+  parser.add_argument("-a", "--alpha",
+    type=float, 
+    help="size of the Neyman-Pearson hypothesis test",
+    default=0.01)
   parser.add_argument("-b", "--bootstraps",
     type=int, 
     help="number of bootstraps to run",
@@ -217,12 +257,12 @@ def main():
 
   labels_disc_arr = np.array(labels_disc_arr)
 
-  mdl = npfs.npfs(fs_method=args.fs_method, n_select=args.select, n_bootstraps=args.bootstraps, \
-      verbose=False, alpha=alpha, beta=beta, parallel=args.cpus)
+  mdl = npfs.npfs(fs_method=args.fs_method, n_select=args.select, n_bootstraps=args.bootstraps, 
+      verbose=False, alpha=args.alpha, beta=0., parallel=args.cpus)
 
   results = mdl.fit(data, labels_disc_arr)
 
-  write_results(features, results, args.output_file)
+  write_results(features, results, args.output_file, labels_disc_dic)
 
 
 if __name__ == "__main__":

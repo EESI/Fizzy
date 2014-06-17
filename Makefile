@@ -6,3 +6,4 @@ all:
 
 install: 
 	install src/fizzy $(DESTDIR)/bin
+	install src/npfs $(DESTDIR)/bin
