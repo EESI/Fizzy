@@ -1,0 +1,220 @@
+#!/usr/bin/env python
+import os
+import re
+import sys
+import argparse
+import scipy.sparse as sp
+import numpy as np
+import json
+import numpy
+import threading
+
+__authors__ = [ "Gregory Ditzler", "Calvin Morrison" ]
+__copyright__ = "Copyright 2014, EESI Laboratory (Drexel University)"
+__license__ = "GPL"
+__maintainer__ = "Gregory Ditzler"
+__email__ = "gregory.ditzler@gmail.com"
+__status__ = "v1.0.0"
+
+alpha = 0.01
+beta = 0.0
+parallel = 32
+
+def load_biom(fname):
+  """
+  load a biom file and return a dense matrix 
+  :fname - string containing the path to the biom file
+  :data - numpy array containing the OTU matrix
+  :samples - list containing the sample IDs (important for knowing 
+    the labels in the data matrix)
+  :features - list containing the feature names
+  """
+  o = json.loads(open(fname,"U").read())
+  if o["matrix_type"] == "sparse":
+    data = load_sparse(o)
+  else:
+    data = load_dense(o)
+
+  samples = []
+  for sid in o["columns"]:
+    samples.append(sid["id"])
+  features = []
+  for sid in o["rows"]:
+    # check to see if the taxonomy is listed, this will generally lead to more 
+    # descriptive names for the taxonomies. 
+    if sid.has_key("metadata") and sid["metadata"] != None:
+      if sid["metadata"].has_key("taxonomy"):
+        # using json.dumps is a quick way to convert the dictionary to a string
+        features.append(json.dumps(sid["metadata"]["taxonomy"]))
+      else:
+        features.append(sid["id"])
+    else:
+      features.append(sid["id"])
+  return data, samples, features 
+
+def load_dense(obj):
+  """
+  load a biom file in dense format
+  :obj - json dictionary from biom file
+  :data - dense data matrix
+  """
+  n_feat,n_sample = obj["shape"]
+  data = numpy.array(obj["data"])
+  return data.transpose()
+
+def load_sparse(obj):
+  """
+  load a biom file in sparse format
+  :obj - json dictionary from biom file
+  :data - dense data matrix
+  """
+  n_feat,n_sample = obj["shape"] 
+  data = numpy.zeros((n_feat, n_sample))
+  for val in obj["data"]:
+    data[val[0], val[1]] = val[2]
+  data = data.transpose() 
+  return data
+
+def load_map(fname):
+  """
+  load a map file. this function does not have any dependecies on qiime"s
+  tools. the returned object is a dictionary of dictionaries. the dictionary 
+  is indexed by the sample_ID and there is an added field for the the 
+  available meta-data. each element in the dictionary is a dictionary with 
+  the keys of the meta-data. 
+  :fname - string containing the map file path
+  :meta_data - dictionary containin the mapping file information  
+  """
+  f = open(fname, "U")
+  mfile = []
+  for line in f: 
+    mfile.append(line.replace("\n","").replace("#","").split("\t"))
+  meta_data_header = mfile.pop(0)
+
+  meta_data = {}
+  for sample in mfile:
+    sample_id = sample[0]
+    meta_data[sample_id] = {}
+    for identifier, value in map(None, meta_data_header, sample):
+      meta_data[sample_id][identifier] = value 
+  return meta_data
+
+def write_results(features, results, fn):
+  """
+  write the indicies listed in results from the features array into fn into a
+  tabular output.
+  """
+  with open(fn, 'w') as fh:
+    for n in results:
+      array = json.loads(features[n])
+      fh.write('\t'.join(array) + '\n')
+
+def get_fs_methods():
+  """
+  get_fs_methods()
+  return the feature selection methods that are 
+  available for use in a list. note that the options
+  are case sensitive. 
+  """
+  return ["CIFE","CMIM","CondMI","Condred","ICAP","JMI","MIM","MIFS","mRMR"]
+
+def convert_to_discrete(items):
+  map_dic = {}
+  discrete_arr = []
+
+  # skip the "sample"
+  disc_val = 0
+  for item in items:
+    if item not in map_dic:
+       map_dic[item] = disc_val
+       disc_val += 1
+    discrete_arr.append(map_dic[item])
+
+  return (map_dic, discrete_arr)
+
+def build_parser():
+  parser = argparse.ArgumentParser(
+    description=("Fizzy implements feature subset selection for biological "
+      "data formats, which are commonly used in metagenomic data analysis.\n")
+  )
+  parser.add_argument("-n", "--select",
+    type=int, 
+    help="number of features to start with",
+    default=5)
+  parser.add_argument("-b", "--bootstraps",
+    type=int, 
+    help="number of bootstraps to run",
+    default=50)
+  parser.add_argument("-l", "--label",
+    help="name of column of the mapping file that "
+      +"indicates the labels",
+    required=True)
+  parser.add_argument("-f", "--fs-method",
+    help="Feature selection method. Available: "
+      +"CIFE CMIM CondMI Condred ICAP JMI MIM MIFS mRMR",
+    default="MIM")
+  parser.add_argument("-i", "--input-file",
+    help="biom format file",
+    required=True)
+  parser.add_argument("-m", "--map-file",
+    help="map file (tsv)",
+    required=True)
+  parser.add_argument("-o", "--output-file",
+    help="output file where selected OTU IDs"
+    +"are stored", 
+    required=True)
+  return parser
+
+def main():
+  parser = build_parser()
+  args = parser.parse_args()
+
+  try:
+    global feast
+    import feast
+  except ImportError:
+    parser.error("Error loading the PyFeast module. is PyFeast installed?")
+
+  try:
+    global npfs
+    import npfs
+  except ImportError:
+    parser.error("Error loading the NPFS module. is NPFS installed?")
+
+  # Make sure our input exist
+  if not os.path.isfile(args.input_file):
+    parser.error("Input file not found.")
+
+  if not os.path.isfile(args.map_file):
+    parser.error("Map file not found.")
+
+  if args.select < 1:
+    parser.error("You must select at least one result.")
+
+  if args.fs_method not in get_fs_methods():
+    parser.error("Feature selection method not found. please select from " 
+      + " ".join(get_fs_methods()))
+
+  data, samples, features = load_biom(args.input_file)
+  data = numpy.array(data)
+
+  map_arr = load_map(args.map_file)
+
+  labels = []
+  for sample_id in samples:
+    labels.append(map_arr[sample_id][args.label])
+
+  labels_disc_dic, labels_disc_arr = convert_to_discrete(labels)
+
+  labels_disc_arr = np.array(labels_disc_arr)
+
+  mdl = npfs.npfs(fs_method=args.fs_method, n_select=args.select, n_bootstraps=args.bootstraps, \
+      verbose=False, alpha=alpha, beta=beta, parallel=parallel)
+
+  results = mdl.fit(data, labels_disc_arr)
+
+  write_results(features, results, args.output_file)
+
+
+if __name__ == "__main__":
+  sys.exit(main())
