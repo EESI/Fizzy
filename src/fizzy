@@ -266,7 +266,11 @@ def main():
 
   labels = []
   for sample_id in samples:
-    labels.append(map_arr[sample_id][args.label])
+		try:
+			labels.append(map_arr[sample_id][args.label])
+		except:
+			sys.stderr.write('Error: label ' + args.label + ' was not found in map file.\n')
+			exit(1)
 
   labels_disc_dic, labels_disc_arr = convert_to_discrete(labels)
   
