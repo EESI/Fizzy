@@ -3,7 +3,6 @@ import os
 import re
 import sys
 import argparse
-import scipy.sparse as sp
 import json
 import numpy
 import threading
