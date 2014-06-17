@@ -1,16 +1,14 @@
 # Fizzy Feature Selection Tool
 
-Fizzy is a subset selection tool that uses [FEAST](http://www.cs.man.ac.uk/~gbrown/fstoolbox/) in the background to run feature selection. Fizzy processes [BIOM](http://biom-format.org/) and mapping files, which are a standard in metagenomics data analysis. `fizzy` will run feature selection on taxanomic abundances obtained from the biom file given a set of categorical labels obtained form the the mapping file.  
+Fizzy is a feature subset selection tool that uses [FEAST](http://www.cs.man.ac.uk/~gbrown/fstoolbox/) in the background to run feature selection on biological data formats. Fizzy processes [BIOM](http://biom-format.org/) and mapping files, which are a standard in metagenomics data analysis. `fizzy` will run feature selection on taxonomic abundances obtained from the biom file given a set of categorical labels obtained form the the mapping file.  `npfs` is a subset selection tool that provides inference on the number of features that are deemed as *important*. 
 
 # Installation and Dependencies
 
-Install the following dependencies: 
+`fizzy` and `npfs` have a couple of dependencies, which are:
 * [PyFeast](https://github.com/EESI/PyFeast) 
-* [MIToolbox](https://github.com/Craigacp/MIToolbox) 
-* [FEAST](https://github.com/Craigacp/FEAST)
-* [PyNPFS]()
+* [PyNPFS](https://github.com/EESI/py-npfs)
 
-Then open a shell and run: 
+Note, that you'll need to install [MIToolbox](https://github.com/Craigacp/MIToolbox) and [FEAST](https://github.com/Craigacp/FEAST) for PyFeast. After installing the dependencies open a shell and run: 
 ```shell
  sudo make install
 ```
@@ -77,15 +75,19 @@ optional arguments:
 
 A general useage example for Fizzy would be something along the lines of
 ```bash
-  fizzy -i my-data.biom -o results.txt -m mapping-file.txt -f JMI -l BODY-SITE -n 100
+fizzy -i my-data.biom -o results.txt -m mapping-file.txt -f JMI -l BODY-SITE -n 100
 ```
 where `BODY-SITE` is a column in the mapping file. The output file is save in JSON format with the fields that are the classes and a key called `Features`. The `Features` key contains the OTUs that were selected as relevant. Each of the class keys contains the average relative abundance of the OTUs that were selected. The user has contol over the output format (either TSV or JSON) by setting, or not setting the `json` flag. 
 
-Also, check out the [IPython notebook](http://nbviewer.ipython.org/github/EESI/Fizzy/blob/master/test/Fizzy-Notebook.ipynb) for a general Fizzy usage example. 
+Also, check out the [IPython notebook](http://nbviewer.ipython.org/github/EESI/Fizzy/blob/master/test/Fizzy-Notebook.ipynb) for a general Fizzy and NPFS usage example. 
 
 # Credits
 
 * [Calvin Morrison](http://mutantturkey.com/)
 * [Gregory Ditzler](http://gregoryditzler.com)
 * [Gail Rosen](http://www.ece.drexel.edu/gailr/) 
+
+# References 
+
+* Gregory Ditzler, Robi Polikar, and Gail Rosen, "A bootstrap based Neyman-Pearson test for identifying variable importance," *IEEE Transactions on Neural Networks and Learning Systems*, 2014, In Press. ([link](http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=6823119))
 
