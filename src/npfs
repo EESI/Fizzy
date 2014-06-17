@@ -100,7 +100,7 @@ def load_map(fname):
       meta_data[sample_id][identifier] = value 
   return meta_data
 
-def write_results(features, results, output_fp, key_map):
+def write_results(data, labels, features, results, output_fp, key_map, set_json):
   """
   write the indicies listed in results from the features array into fn into a
   tabular output.
@@ -112,7 +112,7 @@ def write_results(features, results, output_fp, key_map):
     reduced_set.append(dels.sub("", mstr))
   
   ds = get_stats(data, labels, results, reduced_set, key_map)
-  if args.json==True:
+  if set_json==True:
     json.dump(ds, open(output_fp,"w"))
   else:
     f = open(output_fp, "w")
@@ -148,6 +148,13 @@ def get_stats(data, labels, indices, reduced_set, key_map):
     data_struct[key] = data_rel[class_idx, feature_idx].mean(axis=1).tolist()
   data_struct["Features"] = reduced_set
   return data_struct
+
+def count2abun(count_matrix):
+  """
+  Convert X into a relative abundance matrix
+  """
+  scale_factor = count_matrix.sum(axis=1)
+  return count_matrix/numpy.tile(scale_factor,[count_matrix.shape[1],1]).transpose()
 
 
 def get_fs_methods():
@@ -197,6 +204,10 @@ def build_parser():
   parser.add_argument("-i", "--input-file",
     help="biom format file",
     required=True)
+  parser.add_argument("-j", "--json", 
+    help="store the output as a json format file.",
+    action="store_true",
+    required=False)
   parser.add_argument("-l", "--label",
     help="name of column of the mapping file that "
       +"indicates the labels",
@@ -266,7 +277,8 @@ def main():
 
   results = mdl.fit(data, labels_disc_arr)
 
-  write_results(features, results, args.output_file, labels_disc_dic)
+  write_results(data, labels_disc_arr, features, results, args.output_file, labels_disc_dic,
+      args.json)
 
 
 if __name__ == "__main__":
