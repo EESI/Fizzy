@@ -17,17 +17,17 @@ __status__ = "v1.0.0"
 
 def load_biom(fname):
   """
-  load a biom file and return a dense matrix 
+  load a biom file and return a dense matrix
   :fname - string containing the path to the biom file
   :data - numpy array containing the OTU matrix
-  :samples - list containing the sample IDs (important for knowing 
+  :samples - list containing the sample IDs (important for knowing
     the labels in the data matrix)
   :features - list containing the feature names
   """
   try:
     o = json.loads(open(fname,"U").read())
   except Exception, e:
-    exit('Error: could not load biom. "' + str(e) +'')
+    exit('Error: could not load biom. "' + str(e) +'"')
 
   if o["matrix_type"] == "sparse":
     data = load_sparse(o)
@@ -211,29 +211,29 @@ def build_parser():
     description=("Fizzy implements feature subset selection for biological "
       "data formats, which are commonly used in metagenomic data analysis.\n")
   )
-  parser.add_argument("-n", "--select", 
+  parser.add_argument("-n", "--select",
     type=int, 
-    help="number of features to select", 
+    help="number of features to select",
     default=15)
-  parser.add_argument("-l", "--label", 
+  parser.add_argument("-l", "--label",
     help="name of column of the mapping file that "
       +"indicates the labels",
     required=True)
-  parser.add_argument("-f", "--fs-method", 
+  parser.add_argument("-f", "--fs-method",
     help="Feature selection method. Available: "
-      +"CIFE CMIM CondMI Condred ICAP JMI MIM MIFS mRMR", 
+      +"CIFE CMIM CondMI Condred ICAP JMI MIM MIFS mRMR",
     default="MIM")
-  parser.add_argument("-i", "--input-file", 
-    help="biom format file", 
+  parser.add_argument("-i", "--input-file",
+    help="biom format file",
     required=True)
   parser.add_argument("-m", "--map-file", 
-    help="map file (tsv)", 
+    help="map file (tsv)",
     required=True)
-  parser.add_argument("-j", "--json", 
+  parser.add_argument("-j", "--json",
     help="store the output as a json format file.",
     action="store_true",
     required=False)
-  parser.add_argument("-o", "--output-file", 
+  parser.add_argument("-o", "--output-file",
     help="output file where selected OTU IDs and averages of the OTUS for each class"
     +"are stored", 
     required=True)
@@ -278,7 +278,7 @@ def main():
 
   labels_disc_dic, labels_disc_arr = convert_to_discrete(labels)
 
-  t = threading.Thread(target=run_pyfeast, 
+  t = threading.Thread(target=run_pyfeast,
       args=[data, numpy.array(labels_disc_arr), features, args, labels_disc_dic])
   t.daemon = True
   t.start()
