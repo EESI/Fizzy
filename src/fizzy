@@ -271,7 +271,7 @@ def main():
   labels = []
   for sample_id in samples:
     if sample_id not in map_arr:
-      exit('Error: sample' + sample_id + ' was not found in map file.')
+      exit('Error: sample ' + sample_id + ' was not found in map file.')
     if args.label not in map_arr[sample_id]:
       exit('Error: label ' + args.label + ' was not found in map file.')
     labels.append(map_arr[sample_id][args.label])
