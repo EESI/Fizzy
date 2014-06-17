@@ -121,7 +121,7 @@ def write_results(features, results, output_fp, key_map):
           f.write(key+"\t")
     
     for n in range(len(ds["Features"])):
-      f.write(ds["Features"][n])
+      f.write(ds["Features"][n]+"\t")
       for m,key in enumerate(ds.keys()):
         if key != "Features":
           if m == len(ds.keys())-1:
