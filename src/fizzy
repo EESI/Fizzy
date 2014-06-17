@@ -94,23 +94,23 @@ def load_map(fn):
 
     first = first.strip('#')
 
-    reader = csv.DictReader(itertools.chain([first], fh), delimiter='\t')
+    reader = csv.DictReader(itertools.chain([first], fh), delimiter="\t")
 
     try:
       reader_arr = [row for row in reader]
       headers = reader.fieldnames
     except csv.Error as e:
-      exit('Error: map file contains error at line %d: %s' % (reader.line_num, e))
+      exit("Error: map file contains error at line %d: %s" % (reader.line_num, e))
 
-    if 'SampleID' not in headers:
-      exit('Error: no SampleID column in map file')
+    if "SampleID" not in headers:
+      exit("Error: no SampleID column in map file")
 
-    labels = filter(lambda label: label != 'SampleID', headers)
+    labels = filter(lambda label: label != "SampleID", headers)
 
     for row in reader_arr:
-      meta_data[row['SampleID']] = {}
+      meta_data[row["SampleID"]] = {}
       for label in labels:
-        meta_data[row['SampleID']][label] = row[label]
+        meta_data[row["SampleID"]][label] = row[label]
 
     return meta_data
 
@@ -160,9 +160,9 @@ def run_pyfeast(data, labels, features, args, key_map):
   try:
     fs_method = getattr(feast, args.fs_method)
   except AttributeError:
-    raise AttributeError("Unknown feature selection method is being specified "
-        +"for PyFeast. Make sure the feature selection method being selected "
-        +"is a valid one. ")
+    raise AttributeError(("Unknown feature selection method is being specified "
+        "for PyFeast. Make sure the feature selection method being selected "
+        "is a valid one. "))
 
   if len(data.transpose()) < args.select:
     raise ValueError("n_select must be less than the number of observations.")
