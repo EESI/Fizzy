@@ -74,29 +74,46 @@ def load_sparse(obj):
   data = data.transpose() 
   return data
 
-def load_map(fname):
+def load_map(fn):
   """
   load a map file. this function does not have any dependecies on qiime"s
-  tools. the returned object is a dictionary of dictionaries. the dictionary 
-  is indexed by the sample_ID and there is an added field for the the 
-  available meta-data. each element in the dictionary is a dictionary with 
-  the keys of the meta-data. 
-  :fname - string containing the map file path
-  :meta_data - dictionary containin the mapping file information  
+  tools. the returned object is a dictionary of dictionaries. the dictionary
+  is indexed by the sample_ID and there is an added field for the the
+  available meta-data. each element in the dictionary is a dictionary with
+  the keys of the meta-data.
+  :fn - string containing the map file path
+  :meta_data - dictionary containin the mapping file information
   """
-  f = open(fname, "U")
-  mfile = []
-  for line in f: 
-    mfile.append(line.replace("\n","").replace("#","").split("\t"))
-  meta_data_header = mfile.pop(0)
-
   meta_data = {}
-  for sample in mfile:
-    sample_id = sample[0]
-    meta_data[sample_id] = {}
-    for identifier, value in map(None, meta_data_header, sample):
-      meta_data[sample_id][identifier] = value 
-  return meta_data
+
+  with open(fn, "rb") as fh:
+   
+    first = fh.readline()
+
+    if first[0] != "#":
+      exit('Error: expected tab delimted field labels starting with # in map file on line 1')
+
+    first = first.strip('#')
+
+    reader = csv.DictReader(itertools.chain([first], fh), delimiter='\t')
+
+    try:
+      reader_arr = [row for row in reader]
+      headers = reader.fieldnames
+    except csv.Error as e:
+      exit('Error: map file contains error at line %d: %s' % (reader.line_num, e))
+
+    if 'SampleID' not in headers:
+      exit('Error: no SampleID column in map file')
+
+    labels = filter(lambda label: label != 'SampleID', headers)
+
+    for row in reader_arr:
+      meta_data[row['SampleID']] = {}
+      for label in labels:
+        meta_data[row['SampleID']][label] = row[label]
+
+    return meta_data
 
 def get_fs_methods():
   """
@@ -201,7 +218,7 @@ def build_parser():
       "data formats, which are commonly used in metagenomic data analysis.\n")
   )
   parser.add_argument("-n", "--select",
-    type=int, 
+    type=int,
     help="number of features to select",
     default=15)
   parser.add_argument("-l", "--label",
@@ -224,7 +241,7 @@ def build_parser():
     required=False)
   parser.add_argument("-o", "--output-file",
     help="output file where selected OTU IDs and averages of the OTUS for each class"
-    +"are stored", 
+    +"are stored",
     required=True)
   return parser
 
