@@ -8,6 +8,7 @@ import numpy as np
 import json
 import numpy
 import threading
+import multiprocessing
 
 __authors__ = [ "Gregory Ditzler", "Calvin Morrison" ]
 __copyright__ = "Copyright 2014, EESI Laboratory (Drexel University)"
@@ -137,18 +138,14 @@ def build_parser():
     description=("Fizzy implements feature subset selection for biological "
       "data formats, which are commonly used in metagenomic data analysis.\n")
   )
-  parser.add_argument("-n", "--select",
-    type=int, 
-    help="number of features to start with",
-    default=5)
   parser.add_argument("-b", "--bootstraps",
     type=int, 
     help="number of bootstraps to run",
     default=50)
-  parser.add_argument("-l", "--label",
-    help="name of column of the mapping file that "
-      +"indicates the labels",
-    required=True)
+  parser.add_argument("-c", "--cpus",
+    type=int,
+    help="the number of bootstraps to run simultaneously",
+    default=multiprocessing.cpu_count())
   parser.add_argument("-f", "--fs-method",
     help="Feature selection method. Available: "
       +"CIFE CMIM CondMI Condred ICAP JMI MIM MIFS mRMR",
@@ -156,9 +153,17 @@ def build_parser():
   parser.add_argument("-i", "--input-file",
     help="biom format file",
     required=True)
+  parser.add_argument("-l", "--label",
+    help="name of column of the mapping file that "
+      +"indicates the labels",
+    required=True)
   parser.add_argument("-m", "--map-file",
     help="map file (tsv)",
     required=True)
+  parser.add_argument("-n", "--select",
+    type=int, 
+    help="number of features to start with",
+    default=5)
   parser.add_argument("-o", "--output-file",
     help="output file where selected OTU IDs"
     +"are stored", 
@@ -209,7 +214,7 @@ def main():
   labels_disc_arr = np.array(labels_disc_arr)
 
   mdl = npfs.npfs(fs_method=args.fs_method, n_select=args.select, n_bootstraps=args.bootstraps, \
-      verbose=False, alpha=alpha, beta=beta, parallel=parallel)
+      verbose=False, alpha=alpha, beta=beta, parallel=args.cpus)
 
   results = mdl.fit(data, labels_disc_arr)
 
