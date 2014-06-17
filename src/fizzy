@@ -24,7 +24,11 @@ def load_biom(fname):
     the labels in the data matrix)
   :features - list containing the feature names
   """
-  o = json.loads(open(fname,"U").read())
+  try:
+    o = json.loads(open(fname,"U").read())
+  except Exception, e:
+    exit('Error: could not load biom. "' + str(e) +'')
+
   if o["matrix_type"] == "sparse":
     data = load_sparse(o)
   else:
@@ -168,7 +172,7 @@ def run_pyfeast(data, labels, features, args, key_map):
           f.write(key+"\n")
         else:
           f.write(key+"\t")
-    
+
     for n in range(len(ds["Features"])):
       f.write(ds["Features"][n])
       for m,key in enumerate(ds.keys()):
@@ -266,14 +270,14 @@ def main():
 
   labels = []
   for sample_id in samples:
-		try:
-			labels.append(map_arr[sample_id][args.label])
-		except:
-			sys.stderr.write('Error: label ' + args.label + ' was not found in map file.\n')
-			exit(1)
+    if sample_id not in map_arr:
+      exit('Error: sample' + sample_id + ' was not found in map file.')
+    if args.label not in map_arr[sample_id]:
+      exit('Error: label ' + args.label + ' was not found in map file.')
+    labels.append(map_arr[sample_id][args.label])
 
   labels_disc_dic, labels_disc_arr = convert_to_discrete(labels)
-  
+
   t = threading.Thread(target=run_pyfeast, 
       args=[data, numpy.array(labels_disc_arr), features, args, labels_disc_dic])
   t.daemon = True

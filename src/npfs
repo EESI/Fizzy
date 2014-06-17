@@ -19,14 +19,18 @@ __status__ = "v1.0.0"
 
 def load_biom(fname):
   """
-  load a biom file and return a dense matrix 
+  load a biom file and return a dense matrix
   :fname - string containing the path to the biom file
   :data - numpy array containing the OTU matrix
-  :samples - list containing the sample IDs (important for knowing 
+  :samples - list containing the sample IDs (important for knowing
     the labels in the data matrix)
   :features - list containing the feature names
   """
-  o = json.loads(open(fname,"U").read())
+  try:
+    o = json.loads(open(fname,"U").read())
+  except Exception, e:
+    exit('Error: could not load biom. "' + str(e) +'')
+
   if o["matrix_type"] == "sparse":
     data = load_sparse(o)
   else:
@@ -84,7 +88,7 @@ def load_map(fname):
   """
   f = open(fname, "U")
   mfile = []
-  for line in f: 
+  for line in f:
     mfile.append(line.replace("\n","").replace("#","").split("\t"))
   meta_data_header = mfile.pop(0)
 
@@ -114,7 +118,7 @@ def write_results(features, results, output_fp, key_map):
     f = open(output_fp, "w")
     f.write("Features\t")
     for n,key in enumerate(ds.keys()):
-      if key != "Features"
+      if key != "Features":
         if n == len(ds.keys())-1:
           f.write(key+"\n")
         else:
@@ -247,11 +251,11 @@ def main():
 
   labels = []
   for sample_id in samples:
-		try:
-			labels.append(map_arr[sample_id][args.label])
-		except:
-			sys.stderr.write('Error: label ' + args.label + ' was not found in map file.\n')
-			exit(1)
+    if sample_id not in map_arr:
+      exit('Error: sample' + sample_id + ' was not found in map file.')
+    if args.label not in map_arr[sample_id]:
+      exit('Error: label ' + args.label + ' was not found in map file.')
+    labels.append(map_arr[sample_id][args.label])
 
   labels_disc_dic, labels_disc_arr = convert_to_discrete(labels)
 
