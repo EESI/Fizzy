@@ -90,4 +90,5 @@ Also, check out the [IPython notebook](http://nbviewer.ipython.org/github/EESI/F
 # References 
 
 * Gregory Ditzler, Robi Polikar, and Gail Rosen, "A bootstrap based Neyman-Pearson test for identifying variable importance," *IEEE Transactions on Neural Networks and Learning Systems*, 2014, In Press. ([link](http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=6823119))
-
+* Gavin Brown, Adam Pocock, Ming-Jie Zhao, and Mikel Lujan, “Conditional likelihood maximisation: A unifying framework ´
+for information theoretic feature selection,” *Journal of Machine Learning Research*, vol. 13, pp. 27–66, 2012. ([link](http://jmlr.org/papers/v13/brown12a.html))
