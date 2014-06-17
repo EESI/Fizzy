@@ -4,38 +4,73 @@ Fizzy is a subset selection tool that uses [FEAST](http://www.cs.man.ac.uk/~gbro
 
 # Installation and Dependencies
 
-You need to install the [PyFeast](https://github.com/EESI/PyFeast) feature selection library in order to run the tools in Fizzy; however, PyFeast has its own dependencies - namely FEAST. Install the [MIToolbox](https://github.com/Craigacp/MIToolbox) and [FEAST](https://github.com/Craigacp/FEAST) prior to installing PyFeast. For example, you may need to do
-```shell
-  git clone https://github.com/Craigacp/MIToolbox.git
-  cd MIToolbox
-  make 
-  sudo make install
-  cd ../
-  git clone https://github.com/Craigacp/FEAST.git
-  cd FEAST
-  make
-  sudo make install
-  cd ../
-  git clone https://github.com/EESI/PyFeast.git
-  cd PyFeast
-  python setup.py build 
-  sudo python setup.py install 
-```
+Install the following dependencies: 
+* [PyFeast](https://github.com/EESI/PyFeast) 
+* [MIToolbox](https://github.com/Craigacp/MIToolbox) 
+* [FEAST](https://github.com/Craigacp/FEAST)
+* [PyNPFS]()
 
-The above code will install all of the dependencies. Installing `fizzy` requires that you have root access because it is copied to `/usr/local/bin/`. Run `make` at the commandline. Make sure that all of the feature selection methods are compiled with FEAST. Note that this will require you to check the `Makefile` of FEAST.  
+Then open a shell and run: 
+```shell
+ sudo make install
+```
 
 # Options 
 
-* `-l`, `--label`: name of column of the mapping file that indicates the labels
-* `-n`, `--select`: number of taxonomic features to select
-* `-f`, `--fs-method`: Feature selection method. Available: CIFE CMIM CondMI, Condred ICAP JMI MIM MIFS mRMR
-* `-i`, `--input-file`: biom format file
-* `-m`, `--map-file`: TSV mapping file
-* `-o`, `--ouput-file`: output file where selected taxonimic IDs are saved
-* `-j`, `--json`: save the file in JSON not TSV format (TSV if the option is not set)
-Getting help with `fizzy`:
-```bash 
-  fizzy -h
+## Fizzy 
+```bash
+Gregorys-MacBook-Pro-2:Fizzy gditzler$ fizzy -h
+usage: fizzy [-h] [-n SELECT] -l LABEL [-f FS_METHOD] -i INPUT_FILE -m
+             MAP_FILE [-j] -o OUTPUT_FILE
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -n SELECT, --select SELECT
+                        number of features to select
+  -l LABEL, --label LABEL
+                        name of column of the mapping file that indicates the
+                        labels
+  -f FS_METHOD, --fs-method FS_METHOD
+                        Feature selection method. Available: CIFE CMIM CondMI
+                        Condred ICAP JMI MIM MIFS mRMR
+  -i INPUT_FILE, --input-file INPUT_FILE
+                        biom format file
+  -m MAP_FILE, --map-file MAP_FILE
+                        map file (tsv)
+  -j, --json            store the output as a json format file.
+  -o OUTPUT_FILE, --output-file OUTPUT_FILE
+                        output file where selected OTU IDs and averages of the
+                        OTUS for each classare stored
+```
+
+## NPFS
+```bash
+Gregorys-MacBook-Pro-2:Fizzy gditzler$ npfs -h
+usage: npfs [-h] [-a ALPHA] [-b BOOTSTRAPS] [-c CPUS] [-f FS_METHOD] -i
+            INPUT_FILE [-j] -l LABEL -m MAP_FILE [-n SELECT] -o OUTPUT_FILE
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -a ALPHA, --alpha ALPHA
+                        size of the Neyman-Pearson hypothesis test
+  -b BOOTSTRAPS, --bootstraps BOOTSTRAPS
+                        number of bootstraps to run
+  -c CPUS, --cpus CPUS  the number of bootstraps to run simultaneously
+  -f FS_METHOD, --fs-method FS_METHOD
+                        Feature selection method. Available: CIFE CMIM CondMI
+                        Condred ICAP JMI MIM MIFS mRMR
+  -i INPUT_FILE, --input-file INPUT_FILE
+                        biom format file
+  -j, --json            store the output as a json format file.
+  -l LABEL, --label LABEL
+                        name of column of the mapping file that indicates the
+                        labels
+  -m MAP_FILE, --map-file MAP_FILE
+                        map file (tsv)
+  -n SELECT, --select SELECT
+                        number of features to start with
+  -o OUTPUT_FILE, --output-file OUTPUT_FILE
+                        output file where selected OTU IDsare stored 
 ```
 
 # General Usage Example

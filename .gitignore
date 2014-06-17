@@ -4,4 +4,4 @@ src/results.txt
 src/local-test.sh
 test/results.txt
 test/fizzy
-test/.ipynb_checkpoints/
+*.ipynb_checkpoints/
