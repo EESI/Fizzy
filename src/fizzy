@@ -7,6 +7,7 @@ import argparse
 import json
 import numpy
 import threading
+import itertools
 
 __authors__ = [ "Gregory Ditzler", "Calvin Morrison" ]
 __copyright__ = "Copyright 2014, EESI Laboratory (Drexel University)"
