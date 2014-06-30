@@ -1,6 +1,7 @@
 Features	male	female
 Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Bacteroidaceae,Bacteroides,	0.00618397171467	0.0112707882153
 Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Bacteroidaceae,Bacteroides,	0.00295158350608	0.00364086421146
+Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae,Blautia,	0.0031941415396	0.002301583679
 Bacteria,Proteobacteria,Betaproteobacteria,Burkholderiales,Alcaligenaceae,Sutterella,	0.00302004187168	0.00537334646402
 Bacteria,Firmicutes,Clostridia,Clostridiales,Ruminococcaceae	0.0028780920083	0.00195822574802
 Bacteria,Firmicutes,Clostridia,Clostridiales,Ruminococcaceae	0.00418544978696	0.00384063914217
@@ -16,8 +17,6 @@ Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae,Coprococcus,	0.0034
 Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae	0.0038614358256	0.00303380468837
 Bacteria,Firmicutes,Clostridia,Clostridiales,Ruminococcaceae,Faecalibacterium,prausnitzii	0.0216649397549	0.0167985465972
 Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Bacteroidaceae,Bacteroides,ovatus	0.0321219495712	0.0255295039875
-Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae,Blautia,	0.00258654069685	0.00213167170188
-Bacteria,Firmicutes,Clostridia,Clostridiales,Clostridiaceae,Clostridium,	0.00202453948092	0.00193520961462
 Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Rikenellaceae	0.00212122378018	0.00395914060886
 Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae,Blautia,	0.00756773708486	0.00592253364202
 Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Bacteroidaceae,Bacteroides,	0.103161371439	0.112994154362
