@@ -16,6 +16,9 @@ Note, that you'll need to install [MIToolbox](https://github.com/Craigacp/MITool
 # Options 
 
 ## Fizzy 
+
+Fizzy implements a suite of information theoretic subset selection objective functions. The objective function can be changed with the `-f` flag. Note that Fizzy requires the number of OTUs to be selected is specified in advance; however, NPFS can provide statistical inference on the number of important variables in the data. 
+
 ```bash
 Gregorys-MacBook-Pro-2:Fizzy gditzler$ fizzy -h
 usage: fizzy [-h] [-n SELECT] -l LABEL [-f FS_METHOD] -i INPUT_FILE -m
@@ -42,6 +45,9 @@ optional arguments:
 ```
 
 ## NPFS
+
+NPFS is applied as a wrapper to any feature subset selection algorithm, regardless of the obbjective function criteria used by that algorithm, to determine whether a feature belongs in the relevant set. Perhaps more importantly, this procedure efficiently determines the number of relevant features given an initial starting point. Refer to the reference shown below for the details of NPFS. 
+
 ```bash
 Gregorys-MacBook-Pro-2:Fizzy gditzler$ npfs -h
 usage: npfs [-h] [-a ALPHA] [-b BOOTSTRAPS] [-c CPUS] [-f FS_METHOD] -i
