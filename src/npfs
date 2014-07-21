@@ -37,6 +37,7 @@ def load_biom(fname):
   else:
     data = load_dense(o)
 
+  feature_ids = []
   samples = []
   for sid in o["columns"]:
     samples.append(sid["id"])
@@ -52,7 +53,8 @@ def load_biom(fname):
         features.append(sid["id"])
     else:
       features.append(sid["id"])
-  return data, samples, features 
+    feature_ids.append(sid["id"])
+  return data, samples, features, feature_ids
 
 def load_dense(obj):
   """
@@ -118,18 +120,21 @@ def load_map(fn):
 
     return meta_data
 
-def write_results(data, labels, features, results, output_fp, key_map, set_json):
+def write_results(data, labels, features, results, output_fp, key_map, set_json, feature_ids):
   """
   write the indicies listed in results from the features array into fn into a
   tabular output.
   """
   reduced_set = []
+  reduced_ids = []
   dels = re.compile('"| |\[|\]')
   for k in range(len(results)):
     mstr = features[int(results[k])]
     reduced_set.append(dels.sub("", mstr))
+    reduced_ids.append(feature_ids[int(results[k])])
 
   ds = get_stats(data, labels, results, reduced_set, key_map)
+  ds["Feature IDs"] = reduced_ids
 
   # JSON output
   if set_json==True:
@@ -138,15 +143,15 @@ def write_results(data, labels, features, results, output_fp, key_map, set_json)
   # CSV output
   else:
     with open(output_fp, 'w') as f:
-      labels = filter(lambda x: x != "Features", ds.keys())
+      labels = filter(lambda x: x != "Features" and x != "Feature IDs", ds.keys())
 
       # write header
-      f.write("Features\t")
+      f.write("Features\tFeature IDs\t")
       f.write("\t".join(labels)+"\n")
       
       # write each row.
       for n in range(len(ds["Features"])):
-        f.write(ds["Features"][n]+"\t")
+        f.write(ds["Features"][n]+"\t"+ds["Feature IDs"][n]+"\t")
         f.write("\t".join([str(ds[x][n]) for x in labels])+"\n")
 
 def get_stats(data, labels, indices, reduced_set, key_map):
@@ -159,7 +164,8 @@ def get_stats(data, labels, indices, reduced_set, key_map):
     feature_idx = numpy.array([int(i) for i in indices]).reshape( \
         len(indices),1)
     class_idx = numpy.where(numpy.array(labels)==key_map[key])[0]
-    data_struct[key] = data_rel[class_idx, feature_idx].mean(axis=1).tolist()
+    data_struct[key+" (mean)"] = data_rel[class_idx, feature_idx].mean(axis=1).tolist()
+    data_struct[key+" (std)"] = data_rel[class_idx, feature_idx].std(axis=1).tolist()
   data_struct["Features"] = reduced_set
   return data_struct
 
@@ -269,7 +275,7 @@ def main():
     parser.error("Feature selection method not found. please select from " 
       + " ".join(get_fs_methods()))
 
-  data, samples, features = load_biom(args.input_file)
+  data, samples, features, feature_ids = load_biom(args.input_file)
   data = numpy.array(data)
 
   map_arr = load_map(args.map_file)
@@ -292,7 +298,7 @@ def main():
   results = mdl.fit(data, labels_disc_arr)
 
   write_results(data, labels_disc_arr, features, results, args.output_file, labels_disc_dic,
-      args.json)
+      args.json, feature_ids)
 
 
 if __name__ == "__main__":

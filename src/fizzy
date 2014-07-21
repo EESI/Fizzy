@@ -35,6 +35,7 @@ def load_biom(fname):
   else:
     data = load_dense(o)
 
+  feature_ids = []
   samples = []
   for sid in o["columns"]:
     samples.append(sid["id"])
@@ -50,7 +51,8 @@ def load_biom(fname):
         features.append(sid["id"])
     else:
       features.append(sid["id"])
-  return data, samples, features 
+    feature_ids.append(sid["id"])
+  return data, samples, features, feature_ids 
 
 def load_dense(obj):
   """
@@ -139,7 +141,7 @@ def convert_to_discrete(items):
 
   return (map_dic, discrete_arr)
 
-def run_pyfeast(data, labels, features, args, key_map):
+def run_pyfeast(data, labels, features, args, key_map, feature_ids):
   """
   run_pyfeast(data, labels, method)
   :data - numpy data (dense)
@@ -173,24 +175,28 @@ def run_pyfeast(data, labels, features, args, key_map):
 
   sf = fs_method(data, labels, args.select)
   reduced_set = []
+  reduced_ids = []
+
   dels = re.compile('"| |\[|\]')
   for k in range(len(sf)):
     mstr = features[int(sf[k])]
     reduced_set.append(dels.sub("", mstr))
+    reduced_ids.append(feature_ids[int(sf[k])])
 
   ds = get_stats(data, labels, sf, reduced_set, key_map)
+  ds["Feature IDs"] = reduced_ids
+
   if args.json==True:
     json.dump(ds, open(args.output_file,"w"))
   else:
     f = open(args.output_file, "w")
-    f.write("Features\t")
-    f.write("\t".join(filter(lambda x: x != "Features",ds.keys()))+"\n")
+    f.write("Features\tFeature IDs\t")
+    f.write("\t".join(filter(lambda x: x != "Features" and x != "Feature IDs",ds.keys()))+"\n")
     
     for n in range(len(ds["Features"])):
-      f.write(ds["Features"][n]+"\t")
-      f.write("\t".join([str(ds[x][n]) for x in filter(lambda x: x != "Features",ds.keys())])+"\n")
+      f.write(ds["Features"][n]+"\t"+ds["Feature IDs"][n]+"\t")
+      f.write("\t".join([str(ds[x][n]) for x in filter(lambda x: x != "Features" and x != "Feature IDs",ds.keys())])+"\n")
     f.close()
-
 
 def get_stats(data, labels, indices, reduced_set, key_map):
   """
@@ -198,11 +204,11 @@ def get_stats(data, labels, indices, reduced_set, key_map):
   """
   data_struct = {}
   data_rel = count2abun(data)
+  feature_idx = numpy.array([int(i) for i in indices]).reshape(len(indices),1)
   for n,key in enumerate(key_map):
-    feature_idx = numpy.array([int(i) for i in indices]).reshape( \
-        len(indices),1)
     class_idx = numpy.where(numpy.array(labels)==key_map[key])[0]
-    data_struct[key] = data_rel[class_idx, feature_idx].mean(axis=1).tolist()
+    data_struct[key+" (mean)"] = data_rel[class_idx, feature_idx].mean(axis=1).tolist()
+    data_struct[key+" (std)"] = data_rel[class_idx, feature_idx].std(axis=1).tolist()
   data_struct["Features"] = reduced_set
   return data_struct
 
@@ -270,7 +276,7 @@ def main():
     parser.error("Feature selection method not found. please select from " 
       + " ".join(get_fs_methods()))
 
-  data, samples, features = load_biom(args.input_file)
+  data, samples, features, feature_ids = load_biom(args.input_file)
   data = numpy.array(data)
 
   map_arr = load_map(args.map_file)
@@ -286,7 +292,8 @@ def main():
   labels_disc_dic, labels_disc_arr = convert_to_discrete(labels)
 
   t = threading.Thread(target=run_pyfeast,
-      args=[data, numpy.array(labels_disc_arr), features, args, labels_disc_dic])
+      args=[data, numpy.array(labels_disc_arr), features, args, labels_disc_dic, 
+        feature_ids])
   t.daemon = True
   t.start()
 
