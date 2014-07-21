@@ -1,41 +1,74 @@
-Features	male	female
-Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Bacteroidaceae,Bacteroides,	0.00618397171467	0.0112707882153
-Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Bacteroidaceae,Bacteroides,	0.00295158350608	0.00364086421146
-Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae,Blautia,	0.0031941415396	0.002301583679
-Bacteria,Proteobacteria,Betaproteobacteria,Burkholderiales,Alcaligenaceae,Sutterella,	0.00302004187168	0.00537334646402
-Bacteria,Firmicutes,Clostridia,Clostridiales,Ruminococcaceae	0.0028780920083	0.00195822574802
-Bacteria,Firmicutes,Clostridia,Clostridiales,Ruminococcaceae	0.00418544978696	0.00384063914217
-Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae,Ruminococcus,gnavus	0.00396397858292	0.00491691503531
-Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae,Lachnospira,	0.00494005278355	0.00607276333802
-Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Bacteroidaceae,Bacteroides,	0.00346505376295	0.00330769389944
-Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae,Lachnospira,	0.00588675278414	0.00420084393754
-Bacteria,Firmicutes,Clostridia,Clostridiales,	0.00493467575927	0.00387924957179
-Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Rikenellaceae	0.0112613850062	0.0132939712468
-Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Bacteroidaceae,Bacteroides,	0.00804752132983	0.0111111719632
-Bacteria,Firmicutes,Clostridia,Clostridiales,Ruminococcaceae	0.013834488441	0.0120689935843
-Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae,Coprococcus,	0.00343450615127	0.00341450767162
-Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae	0.0038614358256	0.00303380468837
-Bacteria,Firmicutes,Clostridia,Clostridiales,Ruminococcaceae,Faecalibacterium,prausnitzii	0.0216649397549	0.0167985465972
-Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Bacteroidaceae,Bacteroides,ovatus	0.0321219495712	0.0255295039875
-Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Rikenellaceae	0.00212122378018	0.00395914060886
-Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae,Blautia,	0.00756773708486	0.00592253364202
-Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Bacteroidaceae,Bacteroides,	0.103161371439	0.112994154362
-Bacteria,Firmicutes,Clostridia,Clostridiales,Clostridiaceae,SMB53,	0.00380541789404	0.00180993619608
-Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Bacteroidaceae,Bacteroides,uniformis	0.0327912308371	0.0444141205441
-Bacteria,Firmicutes,Clostridia,Clostridiales,Veillonellaceae,Phascolarctobacterium,	0.00540177182001	0.00452976726483
-Bacteria,Firmicutes,Clostridia,Clostridiales,Ruminococcaceae,Ruminococcus,	0.00947424774534	0.00384325255187
-Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae	0.00307174914065	0.00460034485414
-Bacteria,Firmicutes,Clostridia,Clostridiales,Ruminococcaceae	0.0281418198632	0.0248948107572
-Bacteria,Firmicutes,Erysipelotrichi,Erysipelotrichales,Erysipelotrichaceae	0.00620573869464	0.00384045895879
-Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Bacteroidaceae,Bacteroides,fragilis	0.0092027230979	0.01301024878
-Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae,Roseburia,	0.00365132825821	0.00344127417909
-Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Bacteroidaceae,Bacteroides,	0.0132681628068	0.0150546493086
-Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Porphyromonadaceae,Parabacteroides,distasonis	0.0178154762324	0.0146529116885
-Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Porphyromonadaceae,Parabacteroides,	0.00793361688278	0.00948374025358
-Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae	0.0224575610732	0.0173432868978
-Bacteria,Firmicutes,Clostridia,Clostridiales,Ruminococcaceae	0.00446984597156	0.00579988676358
-Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae	0.005944243796	0.00631511731128
-Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae	0.00451747204073	0.00337175952727
-Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Bacteroidaceae,Bacteroides,	0.00984164278404	0.0139536532601
-Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae	0.0106438069155	0.00456384985205
-Bacteria,Firmicutes,Clostridia,Clostridiales,Ruminococcaceae	0.00562268023744	0.00443928393837
+Features	Feature IDs	female (std)	male (std)	female (mean)	male (mean)
+Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Bacteroidaceae,Bacteroides,	178478	0.0314631151405	0.0168459381034	0.0112707882153	0.00618397171467
+Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Bacteroidaceae,Bacteroides,	185420	0.00645779159476	0.00438713658235	0.00364086421146	0.00295158350608
+Bacteria,Firmicutes,Clostridia,Clostridiales,	173876	0.0244999933124	0.0299372061512	0.00940817333283	0.00987153752362
+Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae,Blautia,	198636	0.00347945047058	0.00581584586259	0.002301583679	0.0031941415396
+Bacteria,Proteobacteria,Betaproteobacteria,Burkholderiales,Alcaligenaceae,Sutterella,	4474255	0.018454519456	0.00577491396658	0.00537334646402	0.00302004187168
+Bacteria,Firmicutes,Clostridia,Clostridiales,Ruminococcaceae	4412546	0.00311841640233	0.00629058772485	0.00195822574802	0.0028780920083
+Bacteria,Firmicutes,Clostridia,Clostridiales,Ruminococcaceae	4412540	0.0657635767967	0.00928356863857	0.00928217255423	0.0040159915204
+Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Bacteroidaceae,Bacteroides,	3465233	0.0304903326118	0.0233259472166	0.00866038454229	0.012442819056
+Bacteria,Firmicutes,Clostridia,Clostridiales,	188574	0.00233617192142	0.00224164289088	0.00149552773124	0.00185813189694
+Bacteria,Firmicutes,Clostridia,Clostridiales,Ruminococcaceae	4465072	0.00997553303235	0.00990168691861	0.00384063914217	0.00418544978696
+Bacteria,Firmicutes,Clostridia,Clostridiales,Ruminococcaceae,Ruminococcus,	3409358	0.0175289107927	0.0123562566852	0.00687474720334	0.00444196353121
+Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae,Ruminococcus,gnavus	191755	0.0325516245952	0.00585639063724	0.00491691503531	0.00396397858292
+Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae,Lachnospira,	2951214	0.0139743360829	0.00767551221039	0.00607276333802	0.00494005278355
+Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Bacteroidaceae,Bacteroides,	198449	0.00283175228501	0.00506321888974	0.00330769389944	0.00346505376295
+Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae,Lachnospira,	3424188	0.0128167469227	0.0337299438551	0.00420084393754	0.00588675278414
+Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae	171532	0.00125022985682	0.00151532259603	0.000659028125387	0.000944726958927
+Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Bacteroidaceae,Bacteroides,	4437362	0.00619274938099	0.00618850269982	0.00237019720231	0.00217943285208
+Bacteria,Firmicutes,Clostridia,Clostridiales,	187816	0.00702143661397	0.0076835107236	0.00387924957179	0.00493467575927
+Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Rikenellaceae	4453609	0.0268514163397	0.0217033006311	0.0132939712468	0.0112613850062
+Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Bacteroidaceae,Bacteroides,	4477861	0.03138564091	0.0181248071854	0.0111111719632	0.00804752132983
+Bacteria,Firmicutes,Clostridia,Clostridiales,Ruminococcaceae	180285	0.01823401109	0.0226862920767	0.0120689935843	0.013834488441
+Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae,Coprococcus,	293508	0.0111752909661	0.00670679614722	0.00341450767162	0.00343450615127
+Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae	2420187	0.00144421385844	0.00151600714516	0.000798206568501	0.00102365237747
+Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae	176306	0.00178894938456	0.00209092025819	0.00129731167861	0.00176014933449
+Bacteria,Firmicutes,Clostridia,Clostridiales,Ruminococcaceae	48084	0.00817002956572	0.00813578749362	0.00305886494288	0.00383007921827
+Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae	292399	0.006779883883	0.00901993282922	0.00303380468837	0.0038614358256
+Bacteria,Firmicutes,Clostridia,Clostridiales,Ruminococcaceae,Faecalibacterium,prausnitzii	194258	0.0223508629498	0.0268940216673	0.0167985465972	0.0216649397549
+Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Bacteroidaceae,Bacteroides,ovatus	180606	0.038436609331	0.0731184001858	0.0255295039875	0.0321219495712
+Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae,Blautia,	194353	0.0038117758354	0.00413234514118	0.00213167170188	0.00258654069685
+Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae,Ruminococcus,gnavus	4426051	0.00162388087163	0.00236117247329	0.00112586974182	0.00161893679007
+Bacteria,Firmicutes,Clostridia,Clostridiales,Clostridiaceae,Clostridium,	3931537	0.00279472254033	0.00364967642438	0.00193520961462	0.00202453948092
+Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Rikenellaceae	4127460	0.0101943981189	0.00550981257331	0.00395914060886	0.00212122378018
+Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae,Blautia,	359493	0.00716716103198	0.0113252757534	0.00592253364202	0.00756773708486
+Bacteria,Firmicutes,Clostridia,Clostridiales,Ruminococcaceae	4372973	0.00430547342326	0.00475011561026	0.00176238444861	0.00203767182911
+Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae,Ruminococcus,	189754	0.00158571274358	0.00361532455349	0.0009362871205	0.00169205749188
+Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Bacteroidaceae,Bacteroides,	197367	0.105455936007	0.108186895353	0.112994154362	0.103161371439
+Bacteria,Firmicutes,Clostridia,Clostridiales,Clostridiaceae,SMB53,	316496	0.00335881722802	0.00789721175964	0.00180993619608	0.00380541789404
+Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Bacteroidaceae,Bacteroides,uniformis	1733364	0.0576834170278	0.0595814045369	0.0444141205441	0.0327912308371
+Bacteria,Firmicutes,Clostridia,Clostridiales,Ruminococcaceae,Oscillospira,	1504042	0.00368666430855	0.00285758617639	0.00233937480216	0.00153902633646
+Bacteria,Firmicutes,Clostridia,Clostridiales,Veillonellaceae,Phascolarctobacterium,	3138798	0.00738505864595	0.0160393016347	0.00452976726483	0.00540177182001
+Bacteria,Firmicutes,Clostridia,Clostridiales,Ruminococcaceae,Ruminococcus,	180509	0.00955807395132	0.0663215212995	0.00384325255187	0.00947424774534
+Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae	194112	0.0167437330216	0.00385578664453	0.00460034485414	0.00307174914065
+Bacteria,Firmicutes,Clostridia,Clostridiales,Ruminococcaceae	194686	0.0025890461427	0.00283498119323	0.00124101381951	0.0014955585973
+Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Bacteroidaceae,Bacteroides,	157748	0.00295150614059	0.00154718904334	0.00171771909991	0.00123212771231
+Bacteria,Firmicutes,Clostridia,Clostridiales,Ruminococcaceae	352347	0.0304252348514	0.0302540716958	0.0248948107572	0.0281418198632
+Bacteria,Firmicutes,Erysipelotrichi,Erysipelotrichales,Erysipelotrichaceae	191718	0.00672277323508	0.0105522631414	0.00384045895879	0.00620573869464
+Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Bacteroidaceae,Bacteroides,fragilis	4433823	0.0519084017545	0.0409095379763	0.01301024878	0.0092027230979
+Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae	4448492	0.00158209672424	0.00159488431303	0.000960891872921	0.00112583194829
+Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae,Roseburia,	174998	0.0115400961393	0.00594260022688	0.00344127417909	0.00365132825821
+Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Bacteroidaceae,Bacteroides,	4322986	0.0304232162265	0.0334888087098	0.0105115726607	0.0139934136767
+Bacteria,Actinobacteria,Actinobacteria,Bifidobacteriales,Bifidobacteriaceae,Bifidobacterium,adolescentis	4347159	0.0158776096181	0.037595980715	0.0048712394398	0.00694024228678
+Bacteria,Proteobacteria,Deltaproteobacteria,Desulfovibrionales,Desulfovibrionaceae,Bilophila,	359872	0.0020858098214	0.00319628146314	0.00123723903289	0.00144818357569
+Bacteria,Verrucomicrobia,Verrucomicrobiae,Verrucomicrobiales,Verrucomicrobiaceae,Akkermansia,muciniphila	4306262	0.0411956885821	0.0507054640673	0.0140655650492	0.0124166679691
+Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Bacteroidaceae,Bacteroides,	4449054	0.045669577846	0.0347157902139	0.0150546493086	0.0132681628068
+Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Porphyromonadaceae,Parabacteroides,distasonis	4365130	0.0251712609959	0.0271570916049	0.0146529116885	0.0178154762324
+Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae,Roseburia,faecis	2532173	0.00313551104282	0.00260534457588	0.00162871515213	0.00123140185237
+Bacteria,Firmicutes,Clostridia,Clostridiales,Ruminococcaceae	4468466	0.0069196125481	0.00419132281596	0.00261991712005	0.00174657961957
+Bacteria,Firmicutes,Clostridia,Clostridiales,Ruminococcaceae	2056702	0.00717305050469	0.0108698706691	0.0024971700437	0.00297779585525
+Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae	125624	0.0017674277085	0.00173150318212	0.00089960968925	0.00120200415876
+Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Rikenellaceae	2617854	0.00290024210911	0.0075205819809	0.00137862473415	0.00148819100971
+Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Porphyromonadaceae,Parabacteroides,	847228	0.0139939852354	0.012649284322	0.00948374025358	0.00793361688278
+Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae	340761	0.0313805357077	0.0258732797701	0.0173432868978	0.0224575610732
+Bacteria,Firmicutes,Clostridia,Clostridiales,Ruminococcaceae	189924	0.0125549284223	0.00707526369207	0.00579988676358	0.00446984597156
+Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae	179637	0.00353188406455	0.00287248763404	0.00160464007865	0.00165372412995
+Bacteria,Firmicutes,Clostridia,Clostridiales,Ruminococcaceae	4364405	0.00378859755488	0.00441270415156	0.00172119117698	0.00193523630955
+Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Odoribacteraceae,Odoribacter,	4454586	0.00133053303861	0.0011562610733	0.00101702510724	0.000886273731394
+Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae	193477	0.0121497778711	0.00934350461046	0.00631511731128	0.005944243796
+Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae	194415	0.00557413970139	0.0091511380126	0.00337175952727	0.00451747204073
+Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Bacteroidaceae,Bacteroides,	4324964	0.0476524356663	0.0145377625123	0.0139536532601	0.00984164278404
+Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Bacteroidaceae,Bacteroides,	1944498	0.00151158526169	0.00135278082812	0.00143027735865	0.00106311002829
+Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae	195674	0.00606294193363	0.0658477022732	0.00456384985205	0.0106438069155
+Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Bacteroidaceae,Bacteroides,	190913	0.00259144526219	0.00182212407275	0.00130409605208	0.0009906228305
+Bacteria,Firmicutes,Clostridia,Clostridiales,Ruminococcaceae	196982	0.00695989986109	0.00818930814153	0.00443928393837	0.00562268023744
