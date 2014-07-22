@@ -6,3 +6,4 @@ src/local-test.sh
 test/results.txt
 test/fizzy
 *.ipynb_checkpoints/
+test/results-npfs.txt
