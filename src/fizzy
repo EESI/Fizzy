@@ -191,11 +191,13 @@ def run_pyfeast(data, labels, features, args, key_map, feature_ids):
   else:
     f = open(args.output_file, "w")
     f.write("Features\tFeature IDs\t")
-    f.write("\t".join(filter(lambda x: x != "Features" and x != "Feature IDs",ds.keys()))+"\n")
+    f.write("\t".join(filter(lambda x: x != "Features" and x != "Feature IDs",
+      ds.keys()))+"\n")
     
     for n in range(len(ds["Features"])):
       f.write(ds["Features"][n]+"\t"+ds["Feature IDs"][n]+"\t")
-      f.write("\t".join([str(ds[x][n]) for x in filter(lambda x: x != "Features" and x != "Feature IDs",ds.keys())])+"\n")
+      f.write("\t".join([str(ds[x][n]) for x in filter(lambda x: x != "Features" 
+        and x != "Feature IDs",ds.keys())])+"\n")
     f.close()
 
 def get_stats(data, labels, indices, reduced_set, key_map):
