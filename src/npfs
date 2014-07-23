@@ -18,7 +18,7 @@ __maintainer__ = "Gregory Ditzler"
 __email__ = "gregory.ditzler@gmail.com"
 __status__ = "v1.0.0"
 
-def load_biom(fname):
+def load_biom(args):
   """
   load a biom file and return a dense matrix
   :fname - string containing the path to the biom file
@@ -27,6 +27,7 @@ def load_biom(fname):
     the labels in the data matrix)
   :features - list containing the feature names
   """
+  fname = args.input_file
   try:
     o = json.loads(open(fname,"U").read())
   except Exception, e:
@@ -36,6 +37,13 @@ def load_biom(fname):
     data = load_sparse(o)
   else:
     data = load_dense(o)
+  
+  if args.scale == True or args.log_scale == True:
+    data = count2abun(1.0+data)
+    if not args.log_scale:
+      data = numpy.ceil(data/numpy.min(data))
+    else:
+      data = numpy.ceil(numpy.log(data/numpy.min(data)))
 
   feature_ids = []
   samples = []
@@ -243,6 +251,14 @@ def build_parser():
     help="output file where selected OTU IDs"
     +"are stored",
     required=True)
+  parser.add_argument("-s", "--scale",
+    help="scale the biom table to account for the relative abundance.",
+    action="store_true",
+    required=False)
+  parser.add_argument("-z", "--log-scale",
+    help="perform a log-scale the biom table to account for the relative abundance.",
+    action="store_true",
+    required=False)
   return parser
 
 def main():
@@ -275,7 +291,7 @@ def main():
     parser.error("Feature selection method not found. please select from " 
       + " ".join(get_fs_methods()))
 
-  data, samples, features, feature_ids = load_biom(args.input_file)
+  data, samples, features, feature_ids = load_biom(args)
   data = numpy.array(data)
 
   map_arr = load_map(args.map_file)
