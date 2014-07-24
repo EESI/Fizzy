@@ -230,6 +230,11 @@ def count2abun(count_matrix):
   scale_factor = count_matrix.sum(axis=1)
   return count_matrix/numpy.tile(scale_factor,[count_matrix.shape[1],1]).transpose()
 
+def write_new_boim(data, sample_ids, features, feature_ids, indices):
+  """
+  """
+  return None 
+
 def build_parser():
   parser = argparse.ArgumentParser(
     description=("Fizzy implements feature subset selection for biological "
@@ -266,9 +271,12 @@ def build_parser():
     action="store_true",
     required=False)
   parser.add_argument("-o", "--output-file",
-    help="output file where selected OTU IDs and averages of the OTUS for each class"
+    help="output file where selected OTU IDs and averages of the OTUS for each class."
     +"are stored",
     required=True)
+  parser.add_argument("-b", "--output-biom",
+    help="output a BIOM file with the relative abundances of the sub-matrix of the selected features.",
+    required=False)
   return parser
 
 def main():
