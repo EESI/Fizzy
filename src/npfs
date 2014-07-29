@@ -128,7 +128,7 @@ def load_map(fn):
 
     return meta_data
 
-def write_results(data, labels, features, results, output_fp, key_map, set_json, feature_ids):
+def write_results(data, samples, labels, features, results, output_fp, key_map, set_json, feature_ids, args):
   """
   write the indicies listed in results from the features array into fn into a
   tabular output.
@@ -161,6 +161,10 @@ def write_results(data, labels, features, results, output_fp, key_map, set_json,
       for n in range(len(ds["Features"])):
         f.write(ds["Features"][n]+"\t"+ds["Feature IDs"][n]+"\t")
         f.write("\t".join([str(ds[x][n]) for x in labels])+"\n")
+  
+  if args.output_biom is not None:
+    write_reduced_biom(data, samples, features, feature_ids, results, args.output_biom)
+
 
 def get_stats(data, labels, indices, reduced_set, key_map):
   """
@@ -207,6 +211,54 @@ def convert_to_discrete(items):
        disc_val += 1
     discrete_arr.append(map_dic[item])
   return (map_dic, discrete_arr)
+
+def write_reduced_biom(data, samples, features, feature_ids, sf, output_fn):
+  """
+  writes relative abundance of top selected features into new biom file.
+  """
+  import datetime
+
+  biom = {}
+  biom['id'] = None
+  biom['format'] = u'Biological Observation Matrix 1.0.0'
+  biom['data'] = []
+  biom['rows'] = []
+  biom['columns'] = []
+  biom['matrix_element_type'] = u'float'
+  biom['matrix_type'] = u'dense'
+  biom['type'] = u'OTU table'
+  biom['date'] = str(datetime.datetime.now())
+
+  data = count2abun(data)
+
+  reduced_data = []
+
+  for row in data:
+    temp_row = []
+    for index in sf:
+      index = int(index)
+      temp_row.append(row[index])
+    reduced_data.append(temp_row)
+
+  for index in range(len(data)):
+    cols_dic = {}
+    cols_dic[u'id'] = samples[index]
+    cols_dic[u'metadata'] = {}
+    biom['columns'].append(cols_dic)
+
+  for index in sf:
+    index = int(index)
+    # feature row
+    rows_dic = {} 
+    rows_dic[u'id'] = feature_ids[index]
+    rows_dic[u'metadata'] = { u'taxonomy': features[index] }
+    biom['rows'].append(rows_dic)
+
+  # data
+  biom['data'] = reduced_data
+  json.dump(biom, open(output_fn, "w"))
+
+
 
 def build_parser():
   parser = argparse.ArgumentParser(
@@ -258,6 +310,10 @@ def build_parser():
   parser.add_argument("-z", "--log-scale",
     help="perform a log-scale the biom table to account for the relative abundance.",
     action="store_true",
+    required=False)
+  parser.add_argument("-r", "--output-biom",
+    help="output a BIOM file with the relative abundances of the sub-matrix of"
+    " the selected features.",
     required=False)
   return parser
 
@@ -313,8 +369,8 @@ def main():
 
   results = mdl.fit(data, labels_disc_arr)
 
-  write_results(data, labels_disc_arr, features, results, args.output_file, labels_disc_dic,
-      args.json, feature_ids)
+  write_results(data, samples, labels_disc_arr, features, results, 
+      args.output_file, labels_disc_dic, args.json, feature_ids, args)
 
 
 if __name__ == "__main__":

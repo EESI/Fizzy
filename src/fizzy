@@ -321,7 +321,7 @@ def build_parser():
     help="output file where selected OTU IDs and averages of the OTUS for each class."
     " are stored",
     required=True)
-  parser.add_argument("-b", "--output-biom",
+  parser.add_argument("-r", "--output-biom",
     help="output a BIOM file with the relative abundances of the sub-matrix of"
     " the selected features.",
     required=False)
