@@ -37,11 +37,13 @@ def load_biom(args):
   else:
     data = load_dense(o)
 
-  if args.scale == True or args.log_scale == True:
+  if args.scale or args.log_scale:
     data = count2abun(1.0+data)
     if not args.log_scale:
+      print 'log scale'
       data = numpy.ceil(data/numpy.min(data))
     else:
+      print 'not log scale'
       data = numpy.ceil(numpy.log(data/numpy.min(data)))
 
   feature_ids = []
@@ -56,12 +58,14 @@ def load_biom(args):
       if sid["metadata"].has_key("taxonomy"):
         # using json.dumps is a quick way to convert the dictionary to a string
         features.append(json.dumps(sid["metadata"]["taxonomy"]))
+        features.append(json.dumps(sid["metadata"]["taxonomy"]))
       else:
         features.append(sid["id"])
     else:
       features.append(sid["id"])
     feature_ids.append(sid["id"])
-  return data, samples, features, feature_ids 
+
+  return data, samples, features, feature_ids
 
 def load_dense(obj):
   """
@@ -150,15 +154,15 @@ def convert_to_discrete(items):
 
   return (map_dic, discrete_arr)
 
-def run_pyfeast(data, labels, features, args, key_map, feature_ids):
+def run_pyfeast(data, samples, features, feature_ids, args, labels, labels_map):
   """
   run_pyfeast(data, labels, method)
   :data - numpy data (dense)
+  :samples - sample names
+  :features - list of feature names (taxonomy)
+  :features_ids - list of feature id's
   :labels - vector of class labels (discrete)
-  :features - list of feature names
-  :method - feature selection method
-  :n_select - number of features to select
-  :key_map - map to go from label integers to class names
+  :labels_map - key value pair of labels and their discrete id's
 
   The feature selection method is based off of the FEAST 
   C variable selection toolbox. 
@@ -192,10 +196,10 @@ def run_pyfeast(data, labels, features, args, key_map, feature_ids):
     reduced_set.append(dels.sub("", mstr))
     reduced_ids.append(feature_ids[int(sf[k])])
 
-  ds = get_stats(data, labels, sf, reduced_set, key_map)
+  ds = get_stats(data, labels, sf, reduced_set, labels_map)
   ds["Feature IDs"] = reduced_ids
 
-  if args.json==True:
+  if args.json:
     json.dump(ds, open(args.output_file,"w"))
   else:
     f = open(args.output_file, "w")
@@ -208,6 +212,8 @@ def run_pyfeast(data, labels, features, args, key_map, feature_ids):
       f.write("\t".join([str(ds[x][n]) for x in filter(lambda x: x != "Features" 
         and x != "Feature IDs",ds.keys())])+"\n")
     f.close()
+  if args.output_biom is not None:
+    write_reduced_biom(data, samples, features, feature_ids, sf, args.output_biom)
 
 def get_stats(data, labels, indices, reduced_set, key_map):
   """
@@ -230,10 +236,51 @@ def count2abun(count_matrix):
   scale_factor = count_matrix.sum(axis=1)
   return count_matrix/numpy.tile(scale_factor,[count_matrix.shape[1],1]).transpose()
 
-def write_new_boim(data, sample_ids, features, feature_ids, indices):
+def write_reduced_biom(data, samples, features, feature_ids, sf, output_fn):
   """
+  writes relative abundance of top selected features into new biom file.
   """
-  return None 
+  import datetime
+
+  biom = {}
+  biom['id'] = None
+  biom['format'] = u'Biological Observation Matrix 1.0.0'
+  biom['data'] = []
+  biom['rows'] = []
+  biom['columns'] = []
+  biom['matrix_element_type'] = u'float'
+  biom['matrix_type'] = u'dense'
+  biom['type'] = u'OTU table'
+  biom['date'] = str(datetime.datetime.now())
+
+  data = count2abun(data)
+
+  reduced_data = []
+
+  for row in data:
+    temp_row = []
+    for index in sf:
+      index = int(index)
+      temp_row.append(row[index])
+    reduced_data.append(temp_row)
+
+  for index in range(len(data)):
+    cols_dic = {}
+    cols_dic[u'id'] = samples[index]
+    cols_dic[u'metadata'] = {}
+    biom['columns'].append(cols_dic)
+
+  for index in sf:
+    index = int(index)
+    # feature row
+    rows_dic = {} 
+    rows_dic[u'id'] = feature_ids[index]
+    rows_dic[u'metadata'] = { u'taxonomy': features[index] }
+    biom['rows'].append(rows_dic)
+
+  # data
+  biom['data'] = reduced_data
+  json.dump(biom, open(output_fn, "w"))
 
 def build_parser():
   parser = argparse.ArgumentParser(
@@ -272,10 +319,11 @@ def build_parser():
     required=False)
   parser.add_argument("-o", "--output-file",
     help="output file where selected OTU IDs and averages of the OTUS for each class."
-    +"are stored",
+    " are stored",
     required=True)
   parser.add_argument("-b", "--output-biom",
-    help="output a BIOM file with the relative abundances of the sub-matrix of the selected features.",
+    help="output a BIOM file with the relative abundances of the sub-matrix of"
+    " the selected features.",
     required=False)
   return parser
 
@@ -319,8 +367,7 @@ def main():
   labels_disc_dic, labels_disc_arr = convert_to_discrete(labels)
 
   t = threading.Thread(target=run_pyfeast,
-      args=[data, numpy.array(labels_disc_arr), features, args, labels_disc_dic, 
-        feature_ids])
+      args=[data, samples, features, feature_ids, args, numpy.array(labels_disc_arr), labels_disc_dic])
   t.daemon = True
   t.start()
 
