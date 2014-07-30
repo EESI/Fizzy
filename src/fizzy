@@ -40,10 +40,8 @@ def load_biom(args):
   if args.scale or args.log_scale:
     data = count2abun(1.0+data)
     if not args.log_scale:
-      print 'log scale'
       data = numpy.ceil(data/numpy.min(data))
     else:
-      print 'not log scale'
       data = numpy.ceil(numpy.log(data/numpy.min(data)))
 
   feature_ids = []
