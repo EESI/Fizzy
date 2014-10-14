@@ -2,22 +2,24 @@
 
 Fizzy is a feature subset selection tool that uses [FEAST](http://www.cs.man.ac.uk/~gbrown/fstoolbox/) in the background to run feature selection on biological data formats. Fizzy processes [BIOM](http://biom-format.org/) and mapping files, which are a standard in metagenomics data analysis. `fizzy` will run feature selection on taxonomic abundances obtained from the biom file given a set of categorical labels obtained form the the mapping file.  `npfs` is a subset selection tool that provides inference on the number of features that are deemed as *important*. Check out the [IPython notebook](http://nbviewer.ipython.org/github/EESI/Fizzy/blob/master/test/Fizzy-Notebook.ipynb) to see `fizzy` and `npfs` in action.
 
+*Do not use any version of Fizzy prior to v1.2.0*.  
+
 # Installation and Dependencies
 
 `fizzy` and `npfs` have a couple of dependencies, which are:
-* [PyFeast](https://github.com/EESI/PyFeast) 
+* [PyFeast](https://github.com/EESI/PyFeast)
 * [PyNPFS](https://github.com/EESI/py-npfs)
 
-Note, that you'll need to install [MIToolbox](https://github.com/Craigacp/MIToolbox) and [FEAST](https://github.com/Craigacp/FEAST) for PyFeast. After installing the dependencies open a shell and run: 
+Note, that you'll need to install [MIToolbox](https://github.com/Craigacp/MIToolbox) and [FEAST](https://github.com/Craigacp/FEAST) for PyFeast. After installing the dependencies open a shell and run:
 ```shell
  sudo make install
 ```
 
-# Options 
+# Options
 
-## Fizzy 
+## Fizzy
 
-Fizzy implements a suite of information theoretic subset selection objective functions. The objective function can be changed with the `-f` flag. Note that Fizzy requires the number of OTUs to be selected is specified in advance; however, NPFS can provide statistical inference on the number of important variables in the data. 
+Fizzy implements a suite of information theoretic subset selection objective functions. The objective function can be changed with the `-f` flag. Note that Fizzy requires the number of OTUs to be selected is specified in advance; however, NPFS can provide statistical inference on the number of important variables in the data.
 
 ```bash
 Gregorys-MacBook-Pro-2:Fizzy gditzler$ fizzy -h
@@ -46,7 +48,7 @@ optional arguments:
 
 ## NPFS
 
-NPFS is applied as a wrapper to any feature subset selection algorithm, regardless of the obbjective function criteria used by that algorithm, to determine whether a feature belongs in the relevant set. Perhaps more importantly, this procedure efficiently determines the number of relevant features given an initial starting point. Refer to the reference shown below for the details of NPFS. 
+NPFS is applied as a wrapper to any feature subset selection algorithm, regardless of the obbjective function criteria used by that algorithm, to determine whether a feature belongs in the relevant set. Perhaps more importantly, this procedure efficiently determines the number of relevant features given an initial starting point. Refer to the reference shown below for the details of NPFS.
 
 ```bash
 Gregorys-MacBook-Pro-2:Fizzy gditzler$ npfs -h
@@ -74,7 +76,7 @@ optional arguments:
   -n SELECT, --select SELECT
                         number of features to start with
   -o OUTPUT_FILE, --output-file OUTPUT_FILE
-                        output file where selected OTU IDsare stored 
+                        output file where selected OTU IDsare stored
 ```
 
 # General Usage Example
@@ -83,17 +85,17 @@ A general useage example for Fizzy would be something along the lines of
 ```bash
 fizzy -i my-data.biom -o results.txt -m mapping-file.txt -f JMI -l BODY-SITE -n 100
 ```
-where `BODY-SITE` is a column in the mapping file. The output file is save in JSON format with the fields that are the classes and a key called `Features`. The `Features` key contains the OTUs that were selected as relevant. Each of the class keys contains the average relative abundance of the OTUs that were selected. The user has contol over the output format (either TSV or JSON) by setting, or not setting the `json` flag. 
+where `BODY-SITE` is a column in the mapping file. The output file is save in JSON format with the fields that are the classes and a key called `Features`. The `Features` key contains the OTUs that were selected as relevant. Each of the class keys contains the average relative abundance of the OTUs that were selected. The user has contol over the output format (either TSV or JSON) by setting, or not setting the `json` flag.
 
-Also, check out the [IPython notebook](http://nbviewer.ipython.org/github/EESI/Fizzy/blob/master/test/Fizzy-Notebook.ipynb) for a general Fizzy and NPFS usage example. 
+Also, check out the [IPython notebook](http://nbviewer.ipython.org/github/EESI/Fizzy/blob/master/test/Fizzy-Notebook.ipynb) for a general Fizzy and NPFS usage example.
 
 # Credits
 
 * [Calvin Morrison](http://mutantturkey.com/)
 * [Gregory Ditzler](http://gregoryditzler.com)
-* [Gail Rosen](http://www.ece.drexel.edu/gailr/) 
+* [Gail Rosen](http://www.ece.drexel.edu/gailr/)
 
-# References 
+# References
 
 * Gregory Ditzler, Robi Polikar, and Gail Rosen, "A bootstrap based Neyman-Pearson test for identifying variable importance," *IEEE Transactions on Neural Networks and Learning Systems*, 2014, In Press. ([link](http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=6823119))
 * Gavin Brown, Adam Pocock, Ming-Jie Zhao, and Mikel Lujan, “Conditional likelihood maximisation: A unifying framework ´
