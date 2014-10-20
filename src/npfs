@@ -348,7 +348,7 @@ def main():
       + " ".join(get_fs_methods()))
 
   data, samples, features, feature_ids = load_biom(args)
-  data = numpy.array(data)
+  data = numpy.array(data, order="F")
 
   map_arr = load_map(args.map_file)
 
