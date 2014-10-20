@@ -362,7 +362,7 @@ def main():
 
   labels_disc_dic, labels_disc_arr = convert_to_discrete(labels)
 
-  labels_disc_arr = np.array(labels_disc_arr)
+  labels_disc_arr = np.array(labels_disc_arr, order="F")
 
   mdl = npfs.npfs(fs_method=args.fs_method, n_select=args.select, n_bootstraps=args.bootstraps, 
       verbose=False, alpha=args.alpha, beta=0., parallel=args.cpus)

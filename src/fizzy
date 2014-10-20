@@ -365,7 +365,7 @@ def main():
   labels_disc_dic, labels_disc_arr = convert_to_discrete(labels)
 
   t = threading.Thread(target=run_pyfeast,
-      args=[data, samples, features, feature_ids, args, numpy.array(labels_disc_arr), labels_disc_dic])
+      args=[data, samples, features, feature_ids, args, numpy.array(labels_disc_arr, order="F"), labels_disc_dic])
   t.daemon = True
   t.start()
 
