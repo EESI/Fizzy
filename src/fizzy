@@ -65,6 +65,28 @@ def load_biom(args):
 
   return data, samples, features, feature_ids
 
+
+def load_svf(args, sep=","):
+  """
+  load a separated variables file
+  """
+  data_list = []
+  samples = []
+  features = []
+  feature_ids = []
+
+  with open(args.input_file, "rb") as csvfile:
+    reader = csv.reader(csvfile, delimiter=sep)
+    for n, row in enumerate(reader):
+      if n == 0:
+        samples = row[1:]
+      else:
+        data_list.append([float(x) for x in row[1:]])
+        features.append(row[0])
+        feature_ids.append("Feature"+str(n))
+  data = numpy.array(data_list).transpose()
+  return data, samples, features, feature_ids
+
 def load_dense(obj):
   """
   load a biom file in dense format
@@ -323,6 +345,10 @@ def build_parser():
     help="output a BIOM file with the relative abundances of the sub-matrix of"
     " the selected features.",
     required=False)
+  parser.add_argument("-v", "--svf",
+    help="the input file is a separated variables file",
+    action="store_true",
+    required=False)
   return parser
 
 def main():
@@ -349,11 +375,14 @@ def main():
     parser.error("Feature selection method not found. please select from " 
       + " ".join(get_fs_methods()))
 
-  data, samples, features, feature_ids = load_biom(args)
-  data = numpy.array(data, order="F")
-
+  if args.svf:
+    data, samples, features, feature_ids = load_svf(args)
+  else:
+    data, samples, features, feature_ids = load_biom(args)
+  
+  data = numpy.array(data.tolist(), order="F")
   map_arr = load_map(args.map_file)
-
+  
   labels = []
   for sample_id in samples:
     if sample_id not in map_arr:
