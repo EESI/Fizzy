@@ -137,8 +137,18 @@ sample4 1
 Calling `fizzy` or `npfs` is pretty much the same, just set the `-v` flag. 
 
 ```bash 
-Gregorys-MacBook-Pro-2:Fizzy gditzler$ fizzy -n 2 -l Class -f MIM -m ~/Downloads/test2.map -i ~/Downloads/test.csv -s -o ~/Downloads/test.ouput -r ~/Downloads/output.biom -v
+Gregorys-MacBook-Pro-2:Fizzy gditzler$ fizzy -n 2 -l Class -f MIM -m test.map -i test.csv -s -o test.ouput -r test.biom -v
 ```
+
+The output selects otu1 and otu2, which makes sense because they are the only variables that carry information about the class label. 
+
+```bash 
+Gregorys-MacBook-Pro-2:src gditzler$ cat test.ouput 
+Features  Feature IDs 1 (std) 0 (mean)  1 (mean)  0 (std)
+otu1  Feature1  0.0119047619048 0.0 0.154761904762  0.0
+otu2  Feature2  0.0119047619048 0.309523809524  0.154761904762  0.0238095238095
+```
+
 
 # Credits
 
