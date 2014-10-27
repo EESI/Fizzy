@@ -149,6 +149,7 @@ otu1  Feature1  0.0119047619048 0.0 0.154761904762  0.0
 otu2  Feature2  0.0119047619048 0.309523809524  0.154761904762  0.0238095238095
 ```
 
+Note that the data in the csv file *MUST* be discretized into bins as per the FEAST documentation. 
 
 # Credits
 
