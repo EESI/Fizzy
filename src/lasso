@@ -223,7 +223,6 @@ def run_lasso(data, samples, features, feature_ids, args, labels, labels_map, co
   """
   run lasso
   """
-  print config
   mdl = Lasso(alpha=config["alpha"], 
               fit_intercept=config["fit_intercept"], 
               normalize=config["normalize"], 
@@ -236,7 +235,7 @@ def run_lasso(data, samples, features, feature_ids, args, labels, labels_map, co
   mdl.fit(X=data, y=labels)
   coeffs = mdl.coef_
   sf = numpy.where(mdl.coef_ > 0.)[0]
-  print sf
+  
   if len(sf) == 0:
     raise ValueError("Zero features selected. Possibly due to poor parameter selection.")
   
