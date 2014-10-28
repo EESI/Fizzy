@@ -14,7 +14,7 @@ __copyright__ = "Copyright 2014, EESI Laboratory (Drexel University)"
 __license__ = "GPL"
 __maintainer__ = "Gregory Ditzler"
 __email__ = "gregory.ditzler@gmail.com"
-__status__ = "v1.0.0"
+__status__ = "v1.3.0"
 
 def load_biom(args):
   """

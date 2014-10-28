@@ -2,32 +2,33 @@
 import os
 import re
 import sys
+import csv
 import argparse
-import numpy as np
 import json
 import numpy
 import threading
-import csv
 import itertools
-import multiprocessing
+from sklearn.linear_model import Lasso
 
 __authors__ = [ "Gregory Ditzler", "Calvin Morrison" ]
 __copyright__ = "Copyright 2014, EESI Laboratory (Drexel University)"
 __license__ = "GPL"
 __maintainer__ = "Gregory Ditzler"
 __email__ = "gregory.ditzler@gmail.com"
-__status__ = "v1.3.0"
+__status__ = "v1.0.0"
+
 
 def load_biom(args):
   """
   load a biom file and return a dense matrix
-  :fname - string containing the path to the biom file
+  :args - arguments from the parser
   :data - numpy array containing the OTU matrix
   :samples - list containing the sample IDs (important for knowing
     the labels in the data matrix)
   :features - list containing the feature names
   """
   fname = args.input_file
+
   try:
     o = json.loads(open(fname,"U").read())
   except Exception, e:
@@ -37,13 +38,9 @@ def load_biom(args):
     data = load_sparse(o)
   else:
     data = load_dense(o)
-  
-  if args.scale == True or args.log_scale == True:
-    data = count2abun(1.0+data)
-    if not args.log_scale:
-      data = numpy.ceil(data/numpy.min(data))
-    else:
-      data = numpy.ceil(numpy.log(data/numpy.min(data)))
+
+  data = count2abun(1.0+data)
+  #data = numpy.ceil(data/numpy.min(data)) # MAYBE I CAN REMOVE THIS
 
   feature_ids = []
   samples = []
@@ -57,11 +54,13 @@ def load_biom(args):
       if sid["metadata"].has_key("taxonomy"):
         # using json.dumps is a quick way to convert the dictionary to a string
         features.append(json.dumps(sid["metadata"]["taxonomy"]))
+        features.append(json.dumps(sid["metadata"]["taxonomy"]))
       else:
         features.append(sid["id"])
     else:
       features.append(sid["id"])
     feature_ids.append(sid["id"])
+
   return data, samples, features, feature_ids
 
 
@@ -102,11 +101,11 @@ def load_sparse(obj):
   :obj - json dictionary from biom file
   :data - dense data matrix
   """
-  n_feat,n_sample = obj["shape"]
+  n_feat,n_sample = obj["shape"] 
   data = numpy.zeros((n_feat, n_sample),order="F")
   for val in obj["data"]:
     data[val[0], val[1]] = val[2]
-  data = data.transpose()
+  data = data.transpose() 
   return data
 
 def load_map(fn):
@@ -130,62 +129,145 @@ def load_map(fn):
 
     first = first.strip('#')
 
-    reader = csv.DictReader(itertools.chain([first], fh), delimiter='\t')
+    reader = csv.DictReader(itertools.chain([first], fh), delimiter="\t")
 
     try:
       reader_arr = [row for row in reader]
       headers = reader.fieldnames
     except csv.Error as e:
-      exit('Error: map file contains error at line %d: %s' % (reader.line_num, e))
+      exit("Error: map file contains error at line %d: %s" % (reader.line_num, e))
 
-    if 'SampleID' not in headers:
-      exit('Error: no SampleID column in map file')
+    if "SampleID" not in headers:
+      exit("Error: no SampleID column in map file")
 
-    labels = filter(lambda label: label != 'SampleID', headers)
+    labels = filter(lambda label: label != "SampleID", headers)
 
     for row in reader_arr:
-      meta_data[row['SampleID']] = {}
+      meta_data[row["SampleID"]] = {}
       for label in labels:
-        meta_data[row['SampleID']][label] = row[label]
+        meta_data[row["SampleID"]][label] = row[label]
 
     return meta_data
 
-def write_results(data, samples, labels, features, results, output_fp, key_map, set_json, feature_ids, args):
+def convert_to_discrete(items):
+  map_dic = {}
+  discrete_arr = []
+
+  # skip the "sample"
+  disc_val = 0
+  for item in items:
+    if item not in map_dic:
+       map_dic[item] = disc_val
+       disc_val += 1
+    discrete_arr.append(map_dic[item])
+
+  return (map_dic, discrete_arr)
+
+def load_config(args):
   """
-  write the indicies listed in results from the features array into fn into a
-  tabular output.
+  load_parameter_file(params_fp)
+    @params_fp
+
+    Load a parameters file describing a base classifier.
+
+    In general you have: 
+    <parameter name>:<value>:<type>
+
+    Available types are:
+    - None
+    - float
+    - int
+    - bool
+    - string 
   """
+  params = {}
+  params["alpha"] = 0.001
+  params["fit_intercept"] = True
+  params["normalize"] =  True
+  params["precompute"] = "auto"
+  params["copy_X"] = True
+  params["max_iter"] = 1000
+  params["tol"] =0.0001
+  params["warm_start"] =False
+  params["positive"] = False
+  params["config"] = 0.000001
+  
+  if args.config != None:
+    handl = open(args.config, "U")
+    
+    for line in handl:
+                                                                 
+      try:
+        line_split = line[:-1].split(":")
+      except:
+        continue
+    
+      if len(line_split) != 3: 
+        continue
+      
+      if line_split[2] == "None":
+        params[line_split[0]] = None
+      elif line_split[2] == "float":
+        print line_split
+        params[line_split[0]] = float(line_split[1])
+      elif line_split[2] == "int":
+        params[line_split[0]] = int(line_split[1])
+      elif line_split[2] == "bool":
+        params[line_split[0]] = bool(line_split[1])
+      elif line_split[2] == "string":
+        params[line_split[0]] = line_split[1]
+    
+  return params
+
+def run_lasso(data, samples, features, feature_ids, args, labels, labels_map, config):
+  """
+  run lasso
+  """
+  print config
+  mdl = Lasso(alpha=config["alpha"], 
+              fit_intercept=config["fit_intercept"], 
+              normalize=config["normalize"], 
+              precompute=config["precompute"], 
+              copy_X=config["copy_X"], 
+              max_iter=config["max_iter"], 
+              tol=config["tol"], 
+              warm_start=config["warm_start"], 
+              positive=config["positive"])
+  mdl.fit(X=data, y=labels)
+  coeffs = mdl.coef_
+  sf = numpy.where(mdl.coef_ > 0.)[0]
+  print sf
+  if len(sf) == 0:
+    raise ValueError("Zero features selected. Possibly due to poor parameter selection.")
+  
   reduced_set = []
   reduced_ids = []
-  dels = re.compile('"| |\[|\]')
-  for k in range(len(results)):
-    mstr = features[int(results[k])]
-    reduced_set.append(dels.sub("", mstr))
-    reduced_ids.append(feature_ids[int(results[k])])
 
-  ds = get_stats(data, labels, results, reduced_set, key_map)
+  dels = re.compile('"| |\[|\]')
+  for k in range(len(sf)):
+    mstr = features[int(sf[k])]
+    reduced_set.append(dels.sub("", mstr))
+    reduced_ids.append(feature_ids[int(sf[k])])
+
+  ds = get_stats(data, labels, sf, reduced_set, labels_map)
   ds["Feature IDs"] = reduced_ids
 
-  # JSON output
-  if set_json==True:
-    json.dump(ds, open(output_fp,"w"))
-
-  # CSV output
+  if args.json:
+    json.dump(ds, open(args.output_file,"w"))
   else:
-    with open(output_fp, 'w') as f:
-      labels = filter(lambda x: x != "Features" and x != "Feature IDs", ds.keys())
-
-      # write header
-      f.write("Features\tFeature IDs\t")
-      f.write("\t".join(labels)+"\n")
-      
-      # write each row.
-      for n in range(len(ds["Features"])):
-        f.write(ds["Features"][n]+"\t"+ds["Feature IDs"][n]+"\t")
-        f.write("\t".join([str(ds[x][n]) for x in labels])+"\n")
-  
+    f = open(args.output_file, "w")
+    f.write("Features\tFeature IDs\t")
+    f.write("\t".join(filter(lambda x: x != "Features" and x != "Feature IDs",
+      ds.keys()))+"\n")
+    
+    for n in range(len(ds["Features"])):
+      f.write(ds["Features"][n]+"\t"+ds["Feature IDs"][n]+"\t")
+      f.write("\t".join([str(ds[x][n]) for x in filter(lambda x: x != "Features" 
+        and x != "Feature IDs",ds.keys())])+"\n")
+    f.close()
   if args.output_biom is not None:
-    write_reduced_biom(data, samples, features, feature_ids, results, args.output_biom)
+    write_reduced_biom(data, samples, features, feature_ids, sf, args.output_biom)
+  return None
 
 
 def get_stats(data, labels, indices, reduced_set, key_map):
@@ -194,9 +276,8 @@ def get_stats(data, labels, indices, reduced_set, key_map):
   """
   data_struct = {}
   data_rel = count2abun(data)
+  feature_idx = numpy.array([int(i) for i in indices]).reshape(len(indices),1)
   for n,key in enumerate(key_map):
-    feature_idx = numpy.array([int(i) for i in indices]).reshape( \
-        len(indices),1)
     class_idx = numpy.where(numpy.array(labels)==key_map[key])[0]
     data_struct[key+" (mean)"] = data_rel[class_idx, feature_idx].mean(axis=1).tolist()
     data_struct[key+" (std)"] = data_rel[class_idx, feature_idx].std(axis=1).tolist()
@@ -209,30 +290,6 @@ def count2abun(count_matrix):
   """
   scale_factor = count_matrix.sum(axis=1)
   return count_matrix/numpy.tile(scale_factor,[count_matrix.shape[1],1]).transpose()
-
-
-def get_fs_methods():
-  """
-  get_fs_methods()
-  return the feature selection methods that are 
-  available for use in a list. note that the options
-  are case sensitive.
-  """
-  return ["CIFE","CMIM","CondMI","Condred","ICAP","JMI","MIM","MIFS","mRMR"]
-
-def convert_to_discrete(items):
-  """Convert a list of labels to numerics"""
-  map_dic = {}
-  discrete_arr = []
-
-  # skip the "sample"
-  disc_val = 0
-  for item in items:
-    if item not in map_dic:
-       map_dic[item] = disc_val
-       disc_val += 1
-    discrete_arr.append(map_dic[item])
-  return (map_dic, discrete_arr)
 
 def write_reduced_biom(data, samples, features, feature_ids, sf, output_fn):
   """
@@ -280,59 +337,29 @@ def write_reduced_biom(data, samples, features, feature_ids, sf, output_fn):
   biom['data'] = reduced_data
   json.dump(biom, open(output_fn, "w"))
 
-
-
 def build_parser():
   parser = argparse.ArgumentParser(
-    description=("NPFS implements feature subset selection for biological "
+    description=("Fizzy implements feature subset selection for biological "
       "data formats, which are commonly used in metagenomic data analysis.\n")
   )
-  parser.add_argument("-a", "--alpha",
-    type=float,
-    help="size of the Neyman-Pearson hypothesis test",
-    default=0.01)
-  parser.add_argument("-b", "--bootstraps",
-    type=int,
-    help="number of bootstraps to run",
-    default=50)
-  parser.add_argument("-c", "--cpus",
-    type=int,
-    help="the number of bootstraps to run simultaneously",
-    default=multiprocessing.cpu_count())
-  parser.add_argument("-f", "--fs-method",
-    help="Feature selection method. Available: "
-      +"CIFE CMIM CondMI Condred ICAP JMI MIM MIFS mRMR",
-    default="MIM")
-  parser.add_argument("-i", "--input-file",
-    help="biom format file",
-    required=True)
-  parser.add_argument("-j", "--json", 
-    help="store the output as a json format file.",
-    action="store_true",
-    required=False)
   parser.add_argument("-l", "--label",
     help="name of column of the mapping file that "
       +"indicates the labels",
     required=True)
-  parser.add_argument("-m", "--map-file",
+  parser.add_argument("-i", "--input-file",
+    help="biom format file",
+    required=True)
+  parser.add_argument("-m", "--map-file", 
     help="map file (tsv)",
     required=True)
-  parser.add_argument("-n", "--select",
-    type=int, 
-    help="number of features to start with",
-    default=5)
+  parser.add_argument("-j", "--json",
+    help="store the output as a json format file.",
+    action="store_true",
+    required=False)
   parser.add_argument("-o", "--output-file",
-    help="output file where selected OTU IDs"
-    +"are stored",
+    help="output file where selected OTU IDs and averages of the OTUS for each class."
+    " are stored",
     required=True)
-  parser.add_argument("-s", "--scale",
-    help="scale the biom table to account for the relative abundance.",
-    action="store_true",
-    required=False)
-  parser.add_argument("-z", "--log-scale",
-    help="perform a log-scale the biom table to account for the relative abundance.",
-    action="store_true",
-    required=False)
   parser.add_argument("-r", "--output-biom",
     help="output a BIOM file with the relative abundances of the sub-matrix of"
     " the selected features.",
@@ -341,23 +368,15 @@ def build_parser():
     help="the input file is a separated variables file",
     action="store_true",
     required=False)
+  parser.add_argument("-c", "--config",
+    help="file path to lasso config file. see sklearn's documentation on the "
+    "options available to the user.",
+    required=False)
   return parser
 
 def main():
   parser = build_parser()
   args = parser.parse_args()
-
-  try:
-    global feast
-    import feast
-  except ImportError:
-    parser.error("Error loading the PyFeast module. is PyFeast installed?")
-
-  try:
-    global npfs
-    import npfs
-  except ImportError:
-    parser.error("Error loading the NPFS module. is NPFS installed?")
 
   # Make sure our input exist
   if not os.path.isfile(args.input_file):
@@ -366,21 +385,13 @@ def main():
   if not os.path.isfile(args.map_file):
     parser.error("Map file not found.")
 
-  if args.select < 1:
-    parser.error("You must select at least one result.")
-
-  if args.fs_method not in get_fs_methods():
-    parser.error("Feature selection method not found. please select from " 
-      + " ".join(get_fs_methods()))
-
   if args.svf:
     data, samples, features, feature_ids = load_svf(args)
   else:
     data, samples, features, feature_ids = load_biom(args)
   
-  data = numpy.array(data.tolist(), order="F")
   map_arr = load_map(args.map_file)
-
+  
   labels = []
   for sample_id in samples:
     if sample_id not in map_arr:
@@ -391,16 +402,24 @@ def main():
 
   labels_disc_dic, labels_disc_arr = convert_to_discrete(labels)
 
-  labels_disc_arr = np.array(labels_disc_arr, order="F")
+  if len(numpy.unique(labels_disc_arr)) != 2:
+    raise ValueError("Unique classes must be equal to 2.")
+  
+  for n in range(len(labels_disc_arr)):
+    if labels_disc_arr[n] == 0:
+      labels_disc_arr[n] = -1.
+    else: 
+      labels_disc_arr[n] = 1.
 
-  mdl = npfs.npfs(fs_method=args.fs_method, n_select=args.select, n_bootstraps=args.bootstraps, 
-      verbose=False, alpha=args.alpha, beta=0., parallel=args.cpus)
-
-  results = mdl.fit(data, labels_disc_arr)
-
-  write_results(data, samples, labels_disc_arr, features, results, 
-      args.output_file, labels_disc_dic, args.json, feature_ids, args)
-
+  config= load_config(args)
+  t = threading.Thread(target=run_lasso,
+      args=[data, samples, features, feature_ids, args, labels_disc_arr, labels_disc_dic, config])
+  t.daemon = True
+  t.start()
+  while t.is_alive(): # wait for the thread to exit
+    t.join(1)
 
 if __name__ == "__main__":
   sys.exit(main())
+
+
