@@ -3,6 +3,8 @@ test/results-npfs.txt
 *.swp
 src/results.txt
 src/local-test.sh
+src/test.biom
+src/test.txt
 test/results.txt
 test/fizzy
 *.ipynb_checkpoints/

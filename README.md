@@ -102,6 +102,38 @@ optional arguments:
   -v, --svf             the input file is a separated variables file
 ```
 
+## Lasso 
+
+```bash 
+Gregorys-MacBook-Pro-2:src gditzler$ ./lasso -h
+usage: lasso [-h] -l LABEL -i INPUT_FILE -m MAP_FILE [-j] -o OUTPUT_FILE
+             [-r OUTPUT_BIOM] [-v] [-c CONFIG]
+
+Fizzy implements feature subset selection for biological data formats, which
+are commonly used in metagenomic data analysis.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -l LABEL, --label LABEL
+                        name of column of the mapping file that indicates the
+                        labels
+  -i INPUT_FILE, --input-file INPUT_FILE
+                        biom format file
+  -m MAP_FILE, --map-file MAP_FILE
+                        map file (tsv)
+  -j, --json            store the output as a json format file.
+  -o OUTPUT_FILE, --output-file OUTPUT_FILE
+                        output file where selected OTU IDs and averages of the
+                        OTUS for each class. are stored
+  -r OUTPUT_BIOM, --output-biom OUTPUT_BIOM
+                        output a BIOM file with the relative abundances of the
+                        sub-matrix of the selected features.
+  -v, --svf             the input file is a separated variables file
+  -c CONFIG, --config CONFIG
+                        file path to lasso config file. see sklearn's
+                        documentation on the options available to the user.
+```
+
 # General Usage Example
 
 ## Working with Biom files
@@ -150,6 +182,26 @@ otu2  Feature2  0.0119047619048 0.309523809524  0.154761904762  0.0238095238095
 ```
 
 Note that the data in the csv file *MUST* be discretized into bins as per the FEAST documentation. 
+
+## Configuring Lasso's Config
+
+A config file might look something like the one below. This is an exhaustive list. A config file is not required if the system defaults are acceptable. 
+```bash 
+alpha:0.0001:float
+fit_intercept:True:bool 
+normalize:True:bool
+precompute:auto:string
+copy_X:True:bool 
+max_iter:5000:int
+tol:0.000001:float
+warm_start:True:bool
+positive=False:bool
+cut_off:0.00001:float
+```
+
+* `alpha`, `fit_intercept`, `normalize`, `precompute`, `copy_X`, `max_iter`, `tol`, `warm_start`, `positive`: Scikit-learn's Lasso parameters. Refer the Scikit-learn's documentation. 
+* `cut_off`: threshold for determining which weights are zero.
+
 
 # Credits
 

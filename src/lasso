@@ -39,7 +39,7 @@ def load_biom(args):
   else:
     data = load_dense(o)
 
-  data = count2abun(1.0+data)
+  #data = count2abun(1.0+data)
   #data = numpy.ceil(data/numpy.min(data)) # MAYBE I CAN REMOVE THIS
 
   feature_ids = []
