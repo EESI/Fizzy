@@ -323,7 +323,7 @@ def build_parser():
     type=int,
     help="number of features to select",
     default=15)
-  parser.add_argument("-v", "--bins",
+  parser.add_argument("-q", "--bins",
     type=int,
     help="number of bins to histogram the data",
     default=25)
