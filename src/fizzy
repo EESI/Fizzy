@@ -39,6 +39,7 @@ def load_biom(args):
 
   if args.scale or args.log_scale:
     data = count2abun(1.0+data)
+    data = bin_data(data, nbins=args.bins)
     if not args.log_scale:
       data = numpy.ceil(data/numpy.min(data))
     else:
@@ -65,6 +66,17 @@ def load_biom(args):
 
   return data, samples, features, feature_ids
 
+
+def bin_data(data, nbins=100):
+  """
+  bin the data
+  """
+  data_out = data.copy()
+  n_features = len(data_out[1])
+  for n in range(n_features):
+    bins = numpy.linspace(numpy.min(data[:,n]), numpy.max(data[:,n]), nbins)
+    data_out[:,n]= numpy.digitize(data[:,n], bins)
+  return data_out
 
 def load_svf(args, sep=","):
   """
@@ -311,6 +323,10 @@ def build_parser():
     type=int,
     help="number of features to select",
     default=15)
+  parser.add_argument("-v", "--bins",
+    type=int,
+    help="number of bins to histogram the data",
+    default=25)
   parser.add_argument("-l", "--label",
     help="name of column of the mapping file that "
       +"indicates the labels",
