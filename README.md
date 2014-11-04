@@ -22,9 +22,9 @@ Note, that you'll need to install [MIToolbox](https://github.com/Craigacp/MITool
 Fizzy implements a suite of information theoretic subset selection objective functions. The objective function can be changed with the `-f` flag. Note that Fizzy requires the number of OTUs to be selected is specified in advance; however, NPFS can provide statistical inference on the number of important variables in the data.
 
 ```bash
-Gregorys-MacBook-Pro-2:src gditzler$ ./fizzy -h
-usage: fizzy [-h] [-n SELECT] -l LABEL [-f FS_METHOD] -i INPUT_FILE -m
-             MAP_FILE [-j] [-s] [-z] -o OUTPUT_FILE [-r OUTPUT_BIOM] [-v]
+Gregorys-MacBook-Pro-2:Fizzy-Benchmarks gditzler$ fizzy -h
+usage: fizzy [-h] [-n SELECT] [-q BINS] -l LABEL [-f FS_METHOD] -i INPUT_FILE
+             -m MAP_FILE [-j] -o OUTPUT_FILE [-r OUTPUT_BIOM] [-v]
 
 Fizzy implements feature subset selection for biological data formats, which
 are commonly used in metagenomic data analysis.
@@ -33,6 +33,7 @@ optional arguments:
   -h, --help            show this help message and exit
   -n SELECT, --select SELECT
                         number of features to select
+  -q BINS, --bins BINS  number of bins to histogram the data
   -l LABEL, --label LABEL
                         name of column of the mapping file that indicates the
                         labels
@@ -44,10 +45,6 @@ optional arguments:
   -m MAP_FILE, --map-file MAP_FILE
                         map file (tsv)
   -j, --json            store the output as a json format file.
-  -s, --scale           scale the biom table to account for the relative
-                        abundance.
-  -z, --log-scale       perform a log-scale the biom table to account for the
-                        relative abundance.
   -o OUTPUT_FILE, --output-file OUTPUT_FILE
                         output file where selected OTU IDs and averages of the
                         OTUS for each class. are stored
@@ -62,10 +59,10 @@ optional arguments:
 NPFS is applied as a wrapper to any feature subset selection algorithm, regardless of the obbjective function criteria used by that algorithm, to determine whether a feature belongs in the relevant set. Perhaps more importantly, this procedure efficiently determines the number of relevant features given an initial starting point. Refer to the reference shown below for the details of NPFS.
 
 ```bash
-Gregorys-MacBook-Pro-2:src gditzler$ ./npfs -h
+Gregorys-MacBook-Pro-2:Fizzy-Benchmarks gditzler$ npfs -h
 usage: npfs [-h] [-a ALPHA] [-b BOOTSTRAPS] [-c CPUS] [-f FS_METHOD] -i
-            INPUT_FILE [-j] -l LABEL -m MAP_FILE [-n SELECT] -o OUTPUT_FILE
-            [-s] [-z] [-r OUTPUT_BIOM] [-v]
+            INPUT_FILE [-j] [-q BINS] -l LABEL -m MAP_FILE [-n SELECT] -o
+            OUTPUT_FILE [-r OUTPUT_BIOM] [-v]
 
 NPFS implements feature subset selection for biological data formats, which
 are commonly used in metagenomic data analysis.
@@ -83,6 +80,7 @@ optional arguments:
   -i INPUT_FILE, --input-file INPUT_FILE
                         biom format file
   -j, --json            store the output as a json format file.
+  -q BINS, --bins BINS  number of bins to histogram the data
   -l LABEL, --label LABEL
                         name of column of the mapping file that indicates the
                         labels
@@ -92,10 +90,6 @@ optional arguments:
                         number of features to start with
   -o OUTPUT_FILE, --output-file OUTPUT_FILE
                         output file where selected OTU IDsare stored
-  -s, --scale           scale the biom table to account for the relative
-                        abundance.
-  -z, --log-scale       perform a log-scale the biom table to account for the
-                        relative abundance.
   -r OUTPUT_BIOM, --output-biom OUTPUT_BIOM
                         output a BIOM file with the relative abundances of the
                         sub-matrix of the selected features.
