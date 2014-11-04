@@ -37,13 +37,14 @@ def load_biom(args):
   else:
     data = load_dense(o)
 
-  if args.scale or args.log_scale:
-    data = count2abun(1.0+data)
-    data = bin_data(data, nbins=args.bins)
-    if not args.log_scale:
-      data = numpy.ceil(data/numpy.min(data))
-    else:
-      data = numpy.ceil(numpy.log(data/numpy.min(data)))
+  #if args.scale or args.log_scale:
+  #  data = count2abun(1.0+data)
+  #  data = bin_data(data, nbins=args.bins)
+  #  if not args.log_scale:
+  #    data = numpy.ceil(data/numpy.min(data))
+  #  else:
+  #    data = numpy.ceil(numpy.log(data/numpy.min(data)))
+  
 
   feature_ids = []
   samples = []
@@ -218,7 +219,12 @@ def run_pyfeast(data, samples, features, feature_ids, args, labels, labels_map):
   if args.select <= 0:
     raise ValueError("n_select cannot be less than or equal to zero.")
 
-  sf = fs_method(data, labels, args.select)
+  data_t = count2abun(1.0+data)
+  data_t = bin_data(data_t, nbins=args.bins)
+  data_t = numpy.ceil(data_t/numpy.min(data_t))
+  data_t = numpy.array(data_t.tolist(), order="F")
+  
+  sf = fs_method(data_t, labels, args.select)
   reduced_set = []
   reduced_ids = []
 
@@ -245,7 +251,7 @@ def run_pyfeast(data, samples, features, feature_ids, args, labels, labels_map):
         and x != "Feature IDs",ds.keys())])+"\n")
     f.close()
   if args.output_biom is not None:
-    write_reduced_biom(data, samples, features, feature_ids, sf, args.output_biom)
+    write_reduced_biom(count2abun(data), samples, features, feature_ids, sf, args.output_biom)
 
 def get_stats(data, labels, indices, reduced_set, key_map):
   """
@@ -345,14 +351,14 @@ def build_parser():
     help="store the output as a json format file.",
     action="store_true",
     required=False)
-  parser.add_argument("-s", "--scale",
-    help="scale the biom table to account for the relative abundance.",
-    action="store_true",
-    required=False)
-  parser.add_argument("-z", "--log-scale",
-    help="perform a log-scale the biom table to account for the relative abundance.",
-    action="store_true",
-    required=False)
+  #parser.add_argument("-s", "--scale",
+  #  help="scale the biom table to account for the relative abundance.",
+  #  action="store_true",
+  #  required=False)
+  #parser.add_argument("-z", "--log-scale",
+  #  help="perform a log-scale the biom table to account for the relative abundance.",
+  #  action="store_true",
+  #  required=False)
   parser.add_argument("-o", "--output-file",
     help="output file where selected OTU IDs and averages of the OTUS for each class."
     " are stored",
@@ -396,7 +402,7 @@ def main():
   else:
     data, samples, features, feature_ids = load_biom(args)
   
-  data = numpy.array(data.tolist(), order="F")
+  
   map_arr = load_map(args.map_file)
   
   labels = []

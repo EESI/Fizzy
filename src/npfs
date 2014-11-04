@@ -38,14 +38,14 @@ def load_biom(args):
   else:
     data = load_dense(o)
   
-  if args.scale == True or args.log_scale == True:
-    data = count2abun(1.0+data)
-    data = bin_data(data, nbins=args.bins)
-    if not args.log_scale:
-      data = numpy.ceil(data/numpy.min(data))
-    else:
-      data = numpy.ceil(numpy.log(data/numpy.min(data)))
-
+  #if args.scale == True or args.log_scale == True:
+  #  data = count2abun(1.0+data)
+  #  data = bin_data(data, nbins=args.bins)
+  #  if not args.log_scale:
+  #    data = numpy.ceil(data/numpy.min(data))
+  #  else:
+  #    data = numpy.ceil(numpy.log(data/numpy.min(data)))
+  
   feature_ids = []
   samples = []
   for sid in o["columns"]:
@@ -343,14 +343,14 @@ def build_parser():
     help="output file where selected OTU IDs"
     +"are stored",
     required=True)
-  parser.add_argument("-s", "--scale",
-    help="scale the biom table to account for the relative abundance.",
-    action="store_true",
-    required=False)
-  parser.add_argument("-z", "--log-scale",
-    help="perform a log-scale the biom table to account for the relative abundance.",
-    action="store_true",
-    required=False)
+  #parser.add_argument("-s", "--scale",
+  #  help="scale the biom table to account for the relative abundance.",
+  #  action="store_true",
+  #  required=False)
+  #parser.add_argument("-z", "--log-scale",
+  #  help="perform a log-scale the biom table to account for the relative abundance.",
+  #  action="store_true",
+  #  required=False)
   parser.add_argument("-r", "--output-biom",
     help="output a BIOM file with the relative abundances of the sub-matrix of"
     " the selected features.",
@@ -396,7 +396,14 @@ def main():
   else:
     data, samples, features, feature_ids = load_biom(args)
   
+  
+  data_t = count2abun(1.0+data)
+  data_t = bin_data(data_t, nbins=args.bins)
+  data_t = numpy.ceil(data_t/numpy.min(data_t))
+  data_t = numpy.array(data_t.tolist(), order="F")
+  
   data = numpy.array(data.tolist(), order="F")
+  
   map_arr = load_map(args.map_file)
 
   labels = []
@@ -414,9 +421,9 @@ def main():
   mdl = npfs.npfs(fs_method=args.fs_method, n_select=args.select, n_bootstraps=args.bootstraps, 
       verbose=False, alpha=args.alpha, beta=0., parallel=args.cpus)
 
-  results = mdl.fit(data, labels_disc_arr)
+  results = mdl.fit(data_t, labels_disc_arr)
 
-  write_results(data, samples, labels_disc_arr, features, results, 
+  write_results(count2abun(data), samples, labels_disc_arr, features, results, 
       args.output_file, labels_disc_dic, args.json, feature_ids, args)
 
 
