@@ -251,7 +251,7 @@ def run_pyfeast(data, samples, features, feature_ids, args, labels, labels_map):
         and x != "Feature IDs",ds.keys())])+"\n")
     f.close()
   if args.output_biom is not None:
-    write_reduced_biom(count2abun(data), samples, features, feature_ids, sf, args.output_biom)
+    write_reduced_biom(data, samples, features, feature_ids, sf, args.output_biom)
 
 def get_stats(data, labels, indices, reduced_set, key_map):
   """

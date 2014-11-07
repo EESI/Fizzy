@@ -423,7 +423,7 @@ def main():
 
   results = mdl.fit(data_t, labels_disc_arr)
 
-  write_results(count2abun(data), samples, labels_disc_arr, features, results, 
+  write_results(data, samples, labels_disc_arr, features, results, 
       args.output_file, labels_disc_dic, args.json, feature_ids, args)
 
 
