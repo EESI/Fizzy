@@ -14,7 +14,54 @@ __copyright__ = "Copyright 2014, EESI Laboratory (Drexel University)"
 __license__ = "GPL"
 __maintainer__ = "Gregory Ditzler"
 __email__ = "gregory.ditzler@gmail.com"
-__status__ = "v1.3.0"
+__status__ = "v1.4.0"
+
+
+def load_biom_with_meta(args):
+  """
+  load a biom file and return a dense matrix
+  :args - arguments from the parser
+  :data - numpy array containing the OTU matrix
+  :samples - list containing the sample IDs (important for knowing
+    the labels in the data matrix)
+  :features - list containing the feature names
+  """
+  fname = args.input_file
+
+  try:
+    o = json.loads(open(fname,"U").read())
+  except Exception, e:
+    exit('Error: could not load biom. "' + str(e) +'"')
+
+  if o["matrix_type"] == "sparse":
+    data = load_sparse(o)
+  else:
+    data = load_dense(o)
+
+  feature_ids = []
+  samples = []
+  labels  = []
+  for sid in o["columns"]:
+    samples.append(sid["id"])
+    labels.append(sid["metadata"][args.label])
+
+  features = []
+  for sid in o["rows"]:
+    # check to see if the taxonomy is listed, this will generally lead to more 
+    # descriptive names for the taxonomies. 
+    if sid.has_key("metadata") and sid["metadata"] != None:
+      if sid["metadata"].has_key("taxonomy"):
+        # using json.dumps is a quick way to convert the dictionary to a string
+        features.append(json.dumps(sid["metadata"]["taxonomy"]))
+        features.append(json.dumps(sid["metadata"]["taxonomy"]))
+      else:
+        features.append(sid["id"])
+    else:
+      features.append(sid["id"])
+    feature_ids.append(sid["id"])
+
+  return data, samples, features, feature_ids, labels
+
 
 def load_biom(args):
   """
@@ -36,15 +83,6 @@ def load_biom(args):
     data = load_sparse(o)
   else:
     data = load_dense(o)
-
-  #if args.scale or args.log_scale:
-  #  data = count2abun(1.0+data)
-  #  data = bin_data(data, nbins=args.bins)
-  #  if not args.log_scale:
-  #    data = numpy.ceil(data/numpy.min(data))
-  #  else:
-  #    data = numpy.ceil(numpy.log(data/numpy.min(data)))
-  
 
   feature_ids = []
   samples = []
@@ -346,19 +384,12 @@ def build_parser():
     required=True)
   parser.add_argument("-m", "--map-file", 
     help="map file (tsv)",
-    required=True)
+    required=False,
+    default=None)
   parser.add_argument("-j", "--json",
     help="store the output as a json format file.",
     action="store_true",
     required=False)
-  #parser.add_argument("-s", "--scale",
-  #  help="scale the biom table to account for the relative abundance.",
-  #  action="store_true",
-  #  required=False)
-  #parser.add_argument("-z", "--log-scale",
-  #  help="perform a log-scale the biom table to account for the relative abundance.",
-  #  action="store_true",
-  #  required=False)
   parser.add_argument("-o", "--output-file",
     help="output file where selected OTU IDs and averages of the OTUS for each class."
     " are stored",
@@ -396,28 +427,30 @@ def main():
   if args.fs_method not in get_fs_methods():
     parser.error("Feature selection method not found. please select from " 
       + " ".join(get_fs_methods()))
-
-  if args.svf:
-    data, samples, features, feature_ids = load_svf(args)
+  
+  if args.map_file == None:
+    data, samples, features, feature_ids, labels = load_biom_with_meta(args)
   else:
-    data, samples, features, feature_ids = load_biom(args)
+    if args.svf:
+      data, samples, features, feature_ids = load_svf(args)
+    else:
+      data, samples, features, feature_ids = load_biom(args)
   
-  
-  map_arr = load_map(args.map_file)
-  
-  labels = []
-  for sample_id in samples:
-    if sample_id not in map_arr:
-      exit('Error: sample ' + sample_id + ' was not found in map file.')
-    if args.label not in map_arr[sample_id]:
-      exit('Error: label ' + args.label + ' was not found in map file.')
-    labels.append(map_arr[sample_id][args.label])
+    map_arr = load_map(args.map_file)
+    labels = []
+    for sample_id in samples:
+      if sample_id not in map_arr:
+        exit('Error: sample ' + sample_id + ' was not found in map file.')
+      if args.label not in map_arr[sample_id]:
+        exit('Error: label ' + args.label + ' was not found in map file.')
+      labels.append(map_arr[sample_id][args.label])
 
   labels_disc_dic, labels_disc_arr = convert_to_discrete(labels)
 
   t = threading.Thread(target=run_pyfeast,
-      args=[data, samples, features, feature_ids, args, numpy.array(labels_disc_arr, order="F"), labels_disc_dic])
-  t.daemon = True
+                       args=[data, samples, features, feature_ids, args, 
+                         numpy.array(labels_disc_arr, order="F"), labels_disc_dic]
+                       )
   t.start()
 
   while t.is_alive(): # wait for the thread to exit
