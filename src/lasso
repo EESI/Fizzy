@@ -395,7 +395,8 @@ def build_parser():
     required=True)
   parser.add_argument("-m", "--map-file", 
     help="map file (tsv)",
-    required=True)
+    required=False,
+    default=None)
   parser.add_argument("-j", "--json",
     help="store the output as a json format file.",
     action="store_true",
