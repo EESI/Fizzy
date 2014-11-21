@@ -17,6 +17,51 @@ __maintainer__ = "Gregory Ditzler"
 __email__ = "gregory.ditzler@gmail.com"
 __status__ = "v1.0.0"
 
+def load_biom_with_meta(args):
+  """
+  load a biom file and return a dense matrix
+  :args - arguments from the parser
+  :data - numpy array containing the OTU matrix
+  :samples - list containing the sample IDs (important for knowing
+    the labels in the data matrix)
+  :features - list containing the feature names
+  """
+  fname = args.input_file
+
+  try:
+    o = json.loads(open(fname,"U").read())
+  except Exception, e:
+    exit('Error: could not load biom. "' + str(e) +'"')
+
+  if o["matrix_type"] == "sparse":
+    data = load_sparse(o)
+  else:
+    data = load_dense(o)
+
+  feature_ids = []
+  samples = []
+  labels  = []
+  for sid in o["columns"]:
+    samples.append(sid["id"])
+    labels.append(sid["metadata"][args.label])
+
+  features = []
+  for sid in o["rows"]:
+    # check to see if the taxonomy is listed, this will generally lead to more 
+    # descriptive names for the taxonomies. 
+    if sid.has_key("metadata") and sid["metadata"] != None:
+      if sid["metadata"].has_key("taxonomy"):
+        # using json.dumps is a quick way to convert the dictionary to a string
+        features.append(json.dumps(sid["metadata"]["taxonomy"]))
+        features.append(json.dumps(sid["metadata"]["taxonomy"]))
+      else:
+        features.append(sid["id"])
+    else:
+      features.append(sid["id"])
+    feature_ids.append(sid["id"])
+
+  return data, samples, features, feature_ids, labels
+
 
 def load_biom(args):
   """
@@ -384,20 +429,23 @@ def main():
   if not os.path.isfile(args.map_file):
     parser.error("Map file not found.")
 
-  if args.svf:
-    data, samples, features, feature_ids = load_svf(args)
+
+  if args.map_file == None:
+    data, samples, features, feature_ids, labels = load_biom_with_meta(args)
   else:
-    data, samples, features, feature_ids = load_biom(args)
+    if args.svf:
+      data, samples, features, feature_ids = load_svf(args)
+    else:
+      data, samples, features, feature_ids = load_biom(args)
   
-  map_arr = load_map(args.map_file)
-  
-  labels = []
-  for sample_id in samples:
-    if sample_id not in map_arr:
-      exit('Error: sample ' + sample_id + ' was not found in map file.')
-    if args.label not in map_arr[sample_id]:
-      exit('Error: label ' + args.label + ' was not found in map file.')
-    labels.append(map_arr[sample_id][args.label])
+    map_arr = load_map(args.map_file)
+    labels = []
+    for sample_id in samples:
+      if sample_id not in map_arr:
+        exit('Error: sample ' + sample_id + ' was not found in map file.')
+      if args.label not in map_arr[sample_id]:
+        exit('Error: label ' + args.label + ' was not found in map file.')
+      labels.append(map_arr[sample_id][args.label])
 
   labels_disc_dic, labels_disc_arr = convert_to_discrete(labels)
 
