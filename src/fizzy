@@ -418,9 +418,6 @@ def main():
   if not os.path.isfile(args.input_file):
     parser.error("Input file not found.")
 
-  if not os.path.isfile(args.map_file):
-    parser.error("Map file not found.")
-
   if args.select < 1:
     parser.error("You must select at least one result.")
 
@@ -431,6 +428,9 @@ def main():
   if args.map_file == None:
     data, samples, features, feature_ids, labels = load_biom_with_meta(args)
   else:
+    if not os.path.isfile(args.map_file):
+      parser.error("Map file not found.")
+
     if args.svf:
       data, samples, features, feature_ids = load_svf(args)
     else:
