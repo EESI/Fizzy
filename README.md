@@ -181,15 +181,12 @@ Note that the data in the csv file *MUST* be discretized into bins as per the FE
 
 A config file might look something like the one below. This is an exhaustive list. A config file is not required if the system defaults are acceptable. 
 ```bash 
-alpha:0.0001:float
 fit_intercept:True:bool 
 normalize:True:bool
 precompute:auto:string
 copy_X:True:bool 
 max_iter:5000:int
 tol:0.000001:float
-warm_start:True:bool
-positive=False:bool
 cut_off:0.00001:float
 ```
 
