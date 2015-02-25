@@ -8,7 +8,7 @@ import json
 import numpy
 import threading
 import itertools
-from sklearn.linear_model import Lasso
+from sklearn.linear_model import LassoCV
 
 __authors__ = [ "Gregory Ditzler", "Calvin Morrison" ]
 __copyright__ = "Copyright 2014, EESI Laboratory (Drexel University)"
@@ -226,15 +226,13 @@ def load_config(args):
     - string 
   """
   params = {}
-  params["alpha"] = 0.001
+  params["n_alphas"] = 100
   params["fit_intercept"] = True
   params["normalize"] =  True
   params["precompute"] = "auto"
   params["copy_X"] = True
   params["max_iter"] = 1000
   params["tol"] =0.0001
-  params["warm_start"] =False
-  params["positive"] = False
   params["config"] = 0.000001
   
   if args.config != None:
@@ -268,15 +266,15 @@ def run_lasso(data, samples, features, feature_ids, args, labels, labels_map, co
   """
   run lasso
   """
-  mdl = Lasso(alpha=config["alpha"], 
+  mdl = LassoCV(n_alphas=config["n_alphas"], 
               fit_intercept=config["fit_intercept"], 
               normalize=config["normalize"], 
               precompute=config["precompute"], 
               copy_X=config["copy_X"], 
               max_iter=config["max_iter"], 
               tol=config["tol"], 
-              warm_start=config["warm_start"], 
-              positive=config["positive"])
+              alphas=None,
+              cv=15)
   mdl.fit(X=data, y=labels)
   coeffs = mdl.coef_
   sf = numpy.where(mdl.coef_ > 0.)[0]
