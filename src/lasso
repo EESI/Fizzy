@@ -226,7 +226,7 @@ def load_config(args):
     - string 
   """
   params = {}
-  params["n_alphas"] = 100
+  params["n_alphas"] = 25
   params["fit_intercept"] = True
   params["normalize"] =  True
   params["precompute"] = "auto"
@@ -234,7 +234,8 @@ def load_config(args):
   params["max_iter"] = 1000
   params["tol"] =0.0001
   params["config"] = 0.000001
-  
+  params["n_jobs"] = -1
+
   if args.config != None:
     handl = open(args.config, "U")
     
@@ -251,7 +252,6 @@ def load_config(args):
       if line_split[2].strip() == "None":
         params[line_split[0]] = None
       elif line_split[2].strip() == "float":
-        print line_split
         params[line_split[0]] = float(line_split[1])
       elif line_split[2].strip() == "int":
         params[line_split[0]] = int(line_split[1])
@@ -271,10 +271,11 @@ def run_lasso(data, samples, features, feature_ids, args, labels, labels_map, co
               normalize=config["normalize"], 
               precompute=config["precompute"], 
               copy_X=config["copy_X"], 
-              max_iter=config["max_iter"], 
+              max_iter=config["max_iter"],
+              n_jobs=config["n_jobs"],
               tol=config["tol"], 
               alphas=None,
-              cv=15)
+              cv=5)
   mdl.fit(X=data, y=labels)
   coeffs = mdl.coef_
   sf = numpy.where(mdl.coef_ > 0.)[0]
