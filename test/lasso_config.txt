@@ -1,10 +1,10 @@
-alpha:0.0001:float
 fit_intercept:True:bool 
 normalize:True:bool
+n_alphas:25:int
 precompute:auto:string
 copy_X:True:bool 
 max_iter:5000:int
 tol:0.000001:float
-warm_start:True:bool
 positive=False:bool
-cut_off:0.00001:float
+n_jobs:50:int
+cut_off:0.00000001:float
