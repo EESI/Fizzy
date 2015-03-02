@@ -278,7 +278,7 @@ def run_lasso(data, samples, features, feature_ids, args, labels, labels_map, co
               cv=5)
   mdl.fit(X=data, y=labels)
   coeffs = mdl.coef_
-  sf = numpy.where(mdl.coef_ > 0.)[0]
+  sf = numpy.where(numpy.abs(mdl.coef_) > 0.)[0]
   
   if len(sf) == 0:
     raise ValueError("Zero features selected. Possibly due to poor parameter selection.")
