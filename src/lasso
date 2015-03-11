@@ -38,27 +38,18 @@ def load_biom_with_meta(args):
   else:
     data = load_dense(o)
 
-  feature_ids = []
+  
   samples = []
   labels  = []
   for sid in o["columns"]:
     samples.append(sid["id"])
     labels.append(sid["metadata"][args.label])
-
+  
+  feature_ids = []
   features = []
   for sid in o["rows"]:
-    # check to see if the taxonomy is listed, this will generally lead to more 
-    # descriptive names for the taxonomies. 
-    if sid.has_key("metadata") and sid["metadata"] != None:
-      if sid["metadata"].has_key("taxonomy"):
-        # using json.dumps is a quick way to convert the dictionary to a string
-        features.append(json.dumps(sid["metadata"]["taxonomy"]))
-        features.append(json.dumps(sid["metadata"]["taxonomy"]))
-      else:
-        features.append(sid["id"])
-    else:
-      features.append(sid["id"])
     feature_ids.append(sid["id"])
+    features.append(json.dumps(sid["metadata"]["taxonomy"]))
 
   return data, samples, features, feature_ids, labels
 
@@ -295,6 +286,13 @@ def run_lasso(data, samples, features, feature_ids, args, labels, labels_map, co
   ds = get_stats(data, labels, sf, reduced_set, labels_map)
   ds["Feature IDs"] = reduced_ids
 
+  print len(coeffs), len(features)
+  
+  if args.weights:
+    f = open(args.weights, "w")
+    for c,feat in map(None, coeffs, features):
+      f.write(feat+"\t"+str(c)+"\n")
+
   if args.json:
     json.dump(ds, open(args.output_file,"w"))
   else:
@@ -410,6 +408,9 @@ def build_parser():
     help="output a BIOM file with the relative abundances of the sub-matrix of"
     " the selected features.",
     required=False)
+  parser.add_argument("-q", "--weights",
+    help="output a feature file with the lasso weights",
+    required=False)
   parser.add_argument("-v", "--svf",
     help="the input file is a separated variables file",
     action="store_true",
@@ -449,6 +450,10 @@ def main():
       labels.append(map_arr[sample_id][args.label])
 
   labels_disc_dic, labels_disc_arr = convert_to_discrete(labels)
+  
+  print "data.shape: " + str(data.shape)
+  print "features:"+str(len(features))
+  print "feature_ids"+str(len(feature_ids))
 
   if len(numpy.unique(labels_disc_arr)) != 2:
     raise ValueError("Unique classes must be equal to 2.")
