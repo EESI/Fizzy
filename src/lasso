@@ -318,12 +318,14 @@ def get_stats(data, labels, indices, reduced_set, key_map):
   Convert a few statistics about the data to a dictionary. 
   """
   data_struct = {}
-  data_rel = count2abun(data)
+  data_rel = count2abun(1.+data)
   feature_idx = numpy.array([int(i) for i in indices]).reshape(len(indices),1)
   for n,key in enumerate(key_map):
     class_idx = numpy.where(numpy.array(labels)==key_map[key])[0]
     data_struct[key+" (mean)"] = data_rel[class_idx, feature_idx].mean(axis=1).tolist()
+    print data_rel[class_idx, feature_idx].mean(axis=1)
     data_struct[key+" (std)"] = data_rel[class_idx, feature_idx].std(axis=1).tolist()
+  
   data_struct["Features"] = reduced_set
   return data_struct
 
@@ -351,7 +353,7 @@ def write_reduced_biom(data, samples, features, feature_ids, sf, output_fn):
   biom['type'] = u'OTU table'
   biom['date'] = str(datetime.datetime.now())
 
-  data = count2abun(data)
+  data = count2abun(1.+data)
 
   reduced_data = []
 
@@ -456,6 +458,12 @@ def main():
       labels_disc_arr[n] = -1.
     else: 
       labels_disc_arr[n] = 1.
+
+  for key in labels_disc_dic.keys():
+    if labels_disc_dic[key] == 0:
+      labels_disc_dic[key] = -1.
+    else:
+      labels_disc_dic[key] = 1.
 
   config= load_config(args)
   t = threading.Thread(target=run_lasso,
