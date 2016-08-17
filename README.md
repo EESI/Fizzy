@@ -1,6 +1,6 @@
 # Fizzy Feature Selection Tool
 
-Fizzy is a feature subset selection tool that uses [FEAST](http://www.cs.man.ac.uk/~gbrown/fstoolbox/) in the background to run feature selection on biological data formats. Fizzy processes [BIOM](http://biom-format.org/) and mapping files, which are a standard in metagenomics data analysis. `fizzy` will run feature selection on taxonomic abundances obtained from the biom file given a set of categorical labels obtained form the the mapping file.  `npfs` is a subset selection tool that provides inference on the number of features that are deemed as *important*. Note that if you do not specify a map file than it is assumed that the labels (indicated by the `--label` option) is stored in the `metadata` of the BIOM file for each of the samples in the data. Check out the [tutorial](https://github.com/gditzler/Fizzy/blob/master/test/Tutorial.md) to see `fizzy` and `npfs` in action.
+Fizzy is a feature subset selection tool (https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-015-0793-8) that uses [FEAST](http://www.cs.man.ac.uk/~gbrown/fstoolbox/) in the background to run feature selection on biological data formats. Fizzy processes [BIOM](http://biom-format.org/) and mapping files, which are a standard in metagenomics data analysis. `fizzy` will run feature selection on taxonomic abundances obtained from the biom file given a set of categorical labels obtained form the the mapping file.  `npfs` is a subset selection tool that provides inference on the number of features that are deemed as *important*. Note that if you do not specify a map file than it is assumed that the labels (indicated by the `--label` option) is stored in the `metadata` of the BIOM file for each of the samples in the data. Check out the [tutorial](https://github.com/gditzler/Fizzy/blob/master/test/Tutorial.md) to see `fizzy` and `npfs` in action.
 
 *Do not use any version of Fizzy prior to v1.2.0*.  
 
@@ -205,6 +205,7 @@ cut_off:0.00001:float
 
 # References
 
+* Gregory Ditzler, J. Calvin Morrison, Yemin Lan and Gail L. Rosen.  "Fizzy: feature subset selection for metagenomics," *BMC Bioinformatics*, vol. 16, no. 358, 2015. ([link](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-015-0793-8)) 
 * Gregory Ditzler, Robi Polikar, and Gail Rosen, "A bootstrap based Neyman-Pearson test for identifying variable importance," *IEEE Transactions on Neural Networks and Learning Systems*, 2014, In Press. ([link](http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=6823119))
 * Gavin Brown, Adam Pocock, Ming-Jie Zhao, and Mikel Lujan, “Conditional likelihood maximisation: A unifying framework ´
 for information theoretic feature selection,” *Journal of Machine Learning Research*, vol. 13, pp. 27–66, 2012. ([link](http://jmlr.org/papers/v13/brown12a.html))
